@@ -2,11 +2,10 @@ const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-    res.send('인수야 안녕');
+    res.send('인수야 안녕 안녕');
 });
 
 const port = 3000;
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
-//안녕하세요
