@@ -3,9 +3,9 @@
     "version": "2.2.12",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -50,
-    "scrollLeft": 0,
-    "zoomLevel": 1,
+    "scrollTop": -137.19999999999987,
+    "scrollLeft": -245.60000000000002,
+    "zoomLevel": 0.9,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -52,7 +52,7 @@
             "name": "idx",
             "comment": "",
             "dataType": "INT",
-            "default": "",
+            "default": "false",
             "option": {
               "autoIncrement": true,
               "primaryKey": true,
@@ -75,7 +75,7 @@
             "name": "question_type",
             "comment": "",
             "dataType": "TEXT",
-            "default": "",
+            "default": "false",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -98,7 +98,7 @@
             "name": "question",
             "comment": "",
             "dataType": "TEXT",
-            "default": "",
+            "default": "false",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -121,7 +121,7 @@
             "name": "main_question",
             "comment": "",
             "dataType": "BOOLEAN",
-            "default": "false",
+            "default": "true",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -141,10 +141,10 @@
           }
         ],
         "ui": {
-          "active": false,
+          "active": true,
           "left": 253,
           "top": 102,
-          "zIndex": 194,
+          "zIndex": 24,
           "widthName": 80.06982421875,
           "widthComment": 60,
           "color": "#0026FF"
@@ -161,7 +161,7 @@
             "name": "idx",
             "comment": "",
             "dataType": "INT",
-            "default": "",
+            "default": "false",
             "option": {
               "autoIncrement": true,
               "primaryKey": true,
@@ -184,7 +184,7 @@
             "name": "question_type",
             "comment": "",
             "dataType": "TEXT",
-            "default": "",
+            "default": "false",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -207,7 +207,7 @@
             "name": "question",
             "comment": "",
             "dataType": "TEXT",
-            "default": "",
+            "default": "false",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -230,7 +230,7 @@
             "name": "main_question",
             "comment": "",
             "dataType": "BOOLEAN",
-            "default": "false",
+            "default": "true",
             "option": {
               "autoIncrement": false,
               "primaryKey": false,
@@ -253,7 +253,7 @@
           "active": false,
           "left": 246,
           "top": 297,
-          "zIndex": 247,
+          "zIndex": 16,
           "widthName": 75.7216796875,
           "widthComment": 60,
           "color": "#FF0000F4"
@@ -291,9 +291,9 @@
         ],
         "ui": {
           "active": false,
-          "left": 749,
-          "top": 113,
-          "zIndex": 250,
+          "left": 692,
+          "top": 122,
+          "zIndex": 5,
           "widthName": 60,
           "widthComment": 60
         },
