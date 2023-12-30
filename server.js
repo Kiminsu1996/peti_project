@@ -1,14 +1,13 @@
-const express = require('express');
 require('dotenv').config();
+const express = require('express');
 const app = express();
-
-app.get('/', (req, res) => {
-    res.send('인수야 안녕 안녕');
-});
-
 const port = 3000;
+
+app.use(express.json());
+
+const accountRouter = require('./routes/account');
+app.use('/account', accountRouter);
+
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`${port}번에서 http 웹서버 실행`);
 });
-//
-//
