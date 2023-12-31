@@ -1,8 +1,10 @@
 const accountRouter = require('express').Router();
 const { postgre } = require('../config/database/postgre');
+const uuidv4 = require('uuid4');
 
 accountRouter.post('/', async (req, res, next) => {
-    const { id, pet_name, pet_type, pet_img } = req.body;
+    const { pet_name, pet_type, pet_img } = req.body;
+    const id = uuidv4().substring(0, 10);
     let conn = null;
     const result = {
         success: false,
