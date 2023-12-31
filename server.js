@@ -5,19 +5,19 @@ const port = 3000;
 
 app.use(express.json());
 
-const accountRouter = require('./routes/account');
+const accountRouter = require('./src/routes/account');
 app.use('/account', accountRouter);
 
-const questionRouter = require('./routes/question');
+const questionRouter = require('./src/routes/question');
 app.use('/question', questionRouter);
 
-const resultRouter = require('./routes/result');
+const resultRouter = require('./src/routes/result');
 app.use('/result', resultRouter);
 
-const dogQuestionListRouter = require('./routes/dogQuestionList');
+const dogQuestionListRouter = require('./src/routes/dogQuestionList');
 app.use('/dogQuestionList', dogQuestionListRouter);
 
-const catQuestionListRouter = require('./routes/catQuestionList');
+const catQuestionListRouter = require('./src/routes/catQuestionList');
 app.use('/catQuestionList', catQuestionListRouter);
 
 app.listen(port, () => {
