@@ -14,6 +14,12 @@ app.use('/question', questionRouter);
 const resultRouter = require('./routes/result');
 app.use('/result', resultRouter);
 
+const dogQuestionListRouter = require('./routes/dogQuestionList');
+app.use('/dogQuestionList', dogQuestionListRouter);
+
+const catQuestionListRouter = require('./routes/catQuestionList');
+app.use('/catQuestionList', catQuestionListRouter);
+
 app.listen(port, () => {
     console.log(`${port}번에서 http 웹서버 실행`);
 });
