@@ -75,7 +75,7 @@ dogQuestionListRouter.post('/', async (req, res) => {
 
     // 가중치 생성 함수
     function makeWeight(idx) {
-        return Array.from({ length: 5 }, (_, i) => {
+        return Array.from({ length: 1 }, (_, i) => {
             if ((idx + 1) % 5 === 1 && i === 0) return 4;
             else if ((idx + 1) % 5 === 0 && i === 4) return 1;
             else if ((idx + 1) % 5 === i + 1) return 1;
