@@ -16,7 +16,7 @@ accountRouter.post('/', async (req, res, next) => {
         const data = [id, pet_name, pet_type, pet_img];
         await postgre.query(sql, data);
         result.success = true;
-        res.send(result);
+        res.status(200).send(result, id);
     } catch (error) {
         return next(error);
     } finally {

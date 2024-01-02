@@ -15,7 +15,7 @@ questionRouter.get('/dog', async (req, res, next) => {
         if (questions.length > 0) {
             result.success = true;
             result.data = questions;
-            res.send(result);
+            res.status(200).send(result);
         } else {
             res.status(404).send(result);
         }
@@ -38,7 +38,7 @@ questionRouter.get('/cat', async (req, res, next) => {
         if (questions.length > 0) {
             result.success = true;
             result.data = questions;
-            res.send(result);
+            res.status(200).send(result);
         } else {
             res.status(404).send(result);
         }
