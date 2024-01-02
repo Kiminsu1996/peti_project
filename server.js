@@ -20,6 +20,12 @@ app.use('/dogQuestionList', dogQuestionListRouter);
 const catQuestionListRouter = require('./src/routes/catQuestionList');
 app.use('/catQuestionList', catQuestionListRouter);
 
+const petiDescriptionRouter = require('./src/routes/petiDescriptionList');
+app.use('/petiDescriptionList', petiDescriptionRouter);
+
+const petiChemistryRouter = require('./src/routes/petiChemistryList');
+app.use('/petiChemistryList', petiChemistryRouter);
+
 app.use((error, req, res, next) => {
     console.log(error);
     const statusCode = error.status || 500;
@@ -34,4 +40,4 @@ app.listen(port, () => {
 });
 
 //500은 서버에서
-//404 Not Found (페이지를 찾을 수 없음ㄴ)
+//404 Not Found (페이지를 찾을 수 없음)

@@ -1,8 +1,9 @@
 const { postgre } = require('../config/database/postgre');
 
 async function getQuestions(type, page, itemsPerPage) {
-    const conn = await postgre.connect();
+    let conn = null;
     try {
+        conn = await postgre.connect();
         const startIdx = (page - 1) * itemsPerPage + 1;
         const endIdx = page * itemsPerPage;
         const sql = `SELECT * FROM peti_question WHERE ${type}_question IS NOT NULL AND idx BETWEEN $1 AND $2 ORDER BY RANDOM()`;
@@ -11,7 +12,9 @@ async function getQuestions(type, page, itemsPerPage) {
     } catch (error) {
         throw error;
     } finally {
-        conn.end();
+        if (conn) {
+            conn.end();
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 const questionRouter = require('express').Router();
-const questionModel = require('../models/questionModel');
+const questionModel = require('../models/selectQuestion');
 
 questionRouter.get('/dog', async (req, res, next) => {
     const result = {

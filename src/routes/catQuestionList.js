@@ -98,8 +98,8 @@ catQuestionListRouter.post('/', async (req, res) => {
             const questionType = determineQuestionType(i);
             const sql = `
             INSERT INTO peti_question 
-            (cat_question, left_option, right_option, first_weight, second_weight, third_weight, fourth_weight, fifth_weight, question_type) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+            (cat_question, left_option, right_option, weight, question_type) 
+            VALUES ($1, $2, $3, $4, $5)`;
             const value = [catQuestion[i], left_option[i], right_option[i], ...weight, questionType];
             await postgre.query(sql, value);
         }
