@@ -8,15 +8,22 @@ accountRouter.post('/', async (req, res, next) => {
     let conn = null;
     const result = {
         success: false,
-        id: id,
+        message: null,
+        id: null,
     };
 
     try {
+        if (!pet_name || !pet_type) {
+            result.message = 'Please enter the data';
+            return res.status(400).send(result);
+        }
+
         conn = await postgre.connect();
         const sql = 'INSERT INTO peti_result (id, pet_name, pet_type, pet_img) VALUES ($1, $2, $3, $4)';
-        const data = [id, pet_name, pet_type, pet_img];
+        const data = [id, pet_name, pet_type, pet_img || null];
         await postgre.query(sql, data);
         result.success = true;
+        result.id = id;
         res.status(200).send(result);
     } catch (error) {
         return next(error);

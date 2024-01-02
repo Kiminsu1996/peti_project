@@ -1,5 +1,5 @@
 const questionRouter = require('express').Router();
-const questionModel = require('../models/selectQuestion');
+const handleQuestionRequest = require('../models/handleQuestionRequest');
 
 questionRouter.get('/dog', async (req, res, next) => {
     const result = {
@@ -8,16 +8,23 @@ questionRouter.get('/dog', async (req, res, next) => {
     };
 
     try {
-        const page = parseInt(req.query.page || 1);
+        let page = parseInt(req.query.page || 1);
         const itemsPerPage = 5;
-        const questions = await questionModel.getQuestions('dog', page, itemsPerPage);
 
-        if (questions.length > 0) {
-            result.success = true;
-            result.data = questions;
-            res.status(200).send(result);
-        } else {
+        // 페이지 값이 숫자가 아니거나 1 미만일 경우 에러 메시지를 반환
+        if (isNaN(page) || page < 1) {
+            result.message = 'Page not found';
+            return res.status(400).send(result);
+        }
+
+        const results = await handleQuestionRequest('dog', page, itemsPerPage);
+
+        if (!results || results.length === 0) {
+            result.message = 'Page not found';
             res.status(404).send(result);
+        } else {
+            result.data = results;
+            res.status(200).send(result);
         }
     } catch (error) {
         return next(error);
@@ -31,16 +38,23 @@ questionRouter.get('/cat', async (req, res, next) => {
     };
 
     try {
-        const page = parseInt(req.query.page || 1);
+        let page = parseInt(req.query.page || 1);
         const itemsPerPage = 5;
-        const questions = await questionModel.getQuestions('cat', page, itemsPerPage);
 
-        if (questions.length > 0) {
-            result.success = true;
-            result.data = questions;
-            res.status(200).send(result);
-        } else {
+        // 페이지 값이 숫자가 아니거나 1 미만일 경우 에러 메시지를 반환
+        if (isNaN(page) || page < 1) {
+            result.message = 'Page not found';
+            return res.status(400).send(result);
+        }
+
+        const results = await handleQuestionRequest('cat', page, itemsPerPage);
+
+        if (!results || results.length === 0) {
+            result.message = 'Page not found';
             res.status(404).send(result);
+        } else {
+            result.data = results;
+            res.status(200).send(result);
         }
     } catch (error) {
         return next(error);
