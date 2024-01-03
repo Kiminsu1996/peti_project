@@ -36,18 +36,18 @@ resultRouter.post('/', async (req, res, next) => {
         const { peti_propensity, peti_description } = await selectTypeDescription(petiType);
         const { compatible_type, incompatible_type } = await selectTypeChemistry(petiType);
 
-        await updatePetiResult(
-            id,
-            petiType,
-            aProportion,
-            eProportion,
-            cProportion,
-            lProportion,
-            peti_propensity,
-            peti_description,
-            compatible_type,
-            incompatible_type
-        );
+        // await updatePetiResult(
+        //     id,
+        //     petiType,
+        //     aProportion,
+        //     eProportion,
+        //     cProportion,
+        //     lProportion,
+        //     peti_propensity,
+        //     peti_description,
+        //     compatible_type,
+        //     incompatible_type
+        // );
         result.success = true;
         res.status(200).send(result);
     } catch (error) {

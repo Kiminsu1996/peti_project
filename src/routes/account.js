@@ -1,5 +1,7 @@
 const accountRouter = require('express').Router();
 const { postgre } = require('../config/database/postgre');
+const jwt = require('jsonwebtoken');
+const jwtConfig = require('../config/jwtConfig');
 const uuidv4 = require('uuid4');
 
 accountRouter.post('/', async (req, res, next) => {
@@ -10,6 +12,7 @@ accountRouter.post('/', async (req, res, next) => {
         success: false,
         message: null,
         id: null,
+        token: null,
     };
 
     try {
@@ -22,7 +25,12 @@ accountRouter.post('/', async (req, res, next) => {
         const sql = 'INSERT INTO peti_result (id, pet_name, pet_type, pet_img) VALUES ($1, $2, $3, $4)';
         const data = [id, pet_name, pet_type, pet_img || null];
         await postgre.query(sql, data);
+
+        // JWT 토큰 생성
+        const token = jwt.sign({ id }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
+
         result.success = true;
+        result.token = token;
         result.id = id;
         res.status(200).send(result);
     } catch (error) {
