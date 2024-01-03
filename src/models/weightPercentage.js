@@ -12,7 +12,7 @@ function calculateWeightedPercentage(responses, questionType) {
 
     // 가중치가 적용된 평균을 퍼센트로 계산
     const percentage = (((totalUserScore - minimumScore) / (maximumScore - minimumScore)) * 100).toFixed(0);
-
+    // if(percentage == 50) {대표질문의 선택에 따라 양수로 선택하면 }
     return { percentage, questionType };
 }
 
