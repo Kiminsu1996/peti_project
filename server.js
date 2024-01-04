@@ -1,7 +1,11 @@
 require('dotenv').config();
 const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
+const server = http.createServer(app);
+const io = socketIo(server);
 
 app.use(express.json());
 
@@ -13,6 +17,9 @@ app.use('/question', questionRouter);
 
 const resultRouter = require('./src/routes/result');
 app.use('/result', resultRouter);
+
+const chatRouter = require('./src/routes/chat');
+app.use('/chat', chatRouter);
 
 const dogQuestionListRouter = require('./src/routes/dogQuestionList');
 app.use('/dogQuestionList', dogQuestionListRouter);
@@ -26,6 +33,25 @@ app.use('/petiDescriptionList', petiDescriptionRouter);
 const petiChemistryRouter = require('./src/routes/petiChemistryList');
 app.use('/petiChemistryList', petiChemistryRouter);
 
+//클라이언트가 서버에 연결이 되면 실행
+io.on('connection', (socket) => {
+    console.log('user connected');
+
+    socket.on('joinRoom', (room) => {
+        socket.join(room); // 사용자를 방에 참여시킵니다.
+        console.log(`user join: ${room}`);
+    });
+
+    socket.on('sendMessage', (data) => {
+        // 메시지를 해당 방의 모든 사용자에게 전송합니다.
+        io.to(data.room).emit('message', { sender: data.sender, message: data.message });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+});
+
 app.use((error, req, res, next) => {
     console.log(error);
     const statusCode = error.status || 500;
@@ -35,7 +61,7 @@ app.use((error, req, res, next) => {
     });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`${port}번에서 http 웹서버 실행`);
 });
 

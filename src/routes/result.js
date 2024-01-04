@@ -59,4 +59,8 @@ resultRouter.post('/', async (req, res, next) => {
     }
 });
 
+resultRouter.get('/user', async (req, res, next) => {});
+
+//위 post api는 계산에 대한 부분을 수정해야한다..... 제대로 수정하자 하나하나 차근차근 수정해보자.. 내가 봤을 때 계산 부분을 좀 합칠 필요가 있다.
+
 module.exports = resultRouter;
