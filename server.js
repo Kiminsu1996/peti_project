@@ -38,15 +38,16 @@ io.on('connection', (socket) => {
     console.log('user connected');
 
     socket.on('joinRoom', (room) => {
-        socket.join(room); // 사용자를 방에 참여시킵니다.
+        socket.join(room); // 사용자를 방에 참여
         console.log(`user join: ${room}`);
     });
 
     socket.on('sendMessage', (data) => {
-        // 메시지를 해당 방의 모든 사용자에게 전송합니다.
+        // 메시지를 해당 방의 모든 사용자에게 전송
         io.to(data.room).emit('message', { sender: data.sender, message: data.message });
     });
 
+    //사용자가 서버와 연결을 끊을 때
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
