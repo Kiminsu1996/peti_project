@@ -21,11 +21,8 @@ app.use('/result', resultRouter);
 const chatRouter = require('./src/routes/chat');
 app.use('/chat', chatRouter);
 
-const dogQuestionListRouter = require('./src/routes/dogQuestionList');
-app.use('/dogQuestionList', dogQuestionListRouter);
-
-const catQuestionListRouter = require('./src/routes/catQuestionList');
-app.use('/catQuestionList', catQuestionListRouter);
+const questionListRouter = require('./src/routes/questionList');
+app.use('/questionList', questionListRouter);
 
 const petiDescriptionRouter = require('./src/routes/petiDescriptionList');
 app.use('/petiDescriptionList', petiDescriptionRouter);
