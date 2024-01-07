@@ -3,15 +3,16 @@ const getQuestions = require('../models/selectQuestion');
 const getRedisClient = require('../config/redisConfig');
 
 questionRouter.get('/:type', async (req, res, next) => {
+    let page = parseInt(req.query.page || 1);
     const pet_name = req.query.pet_name; //동물 이름
     const type = req.params.type; //동물 종류 (강아지, 고양이)
     const result = {
         success: false,
         data: null,
+        totalQuestions: null,
     };
 
     try {
-        let page = parseInt(req.query.page || 1);
         const itemsPerPage = 5;
         const key = `questions:${type}:${pet_name}`; // Redis 키
         const redisClient = getRedisClient();
@@ -33,6 +34,7 @@ questionRouter.get('/:type', async (req, res, next) => {
 
         // Redis에서 데이터 조회
         const questions = await redisClient.lRange(key, start, end);
+        const totalQuestions = await redisClient.lLen(key);
         if (!questions.length) {
             result.message = 'No more questions';
             return res.status(404).send(result);
@@ -43,6 +45,7 @@ questionRouter.get('/:type', async (req, res, next) => {
 
         result.success = true;
         result.data = paginatedData;
+        result.totalQuestions = totalQuestions;
         res.status(200).send(result);
     } catch (error) {
         return next(error);
