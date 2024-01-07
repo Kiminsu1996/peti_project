@@ -6,7 +6,7 @@ const { selectTypeChemistry } = require('../models/selectTypeChemistry');
 const updatePetiResult = require('../models/updatePetiResult');
 
 resultRouter.post('/', async (req, res, next) => {
-    const { arrayResponses, id } = req.body;
+    const { arrayResponses, pet_name, pet_type, pet_img } = req.body;
     let conn = null;
     let calculationResults = null;
     const result = {
@@ -15,21 +15,17 @@ resultRouter.post('/', async (req, res, next) => {
     };
 
     try {
-        if (!id || !arrayResponses) {
+        if (!arrayResponses || !pet_name || !pet_type) {
             result.message = 'Please enter the data';
             return res.status(400).send(result);
         }
 
         conn = await postgre.connect();
 
-        //id 존재 여부 확인
-        const checkIdSql = `SELECT EXISTS(SELECT 1 FROM peti_result WHERE id = $1)`;
-        const idExists = await conn.query(checkIdSql, [id]);
-
-        if (!idExists.rows[0].exists) {
-            result.message = 'This is an unregistered ID';
-            return res.status(400).send(result);
-        }
+        //팻정보 저장
+        const sql = 'INSERT INTO peti_result (id, pet_name, pet_type, pet_img) VALUES ($1, $2, $3, $4)';
+        const data = [id, pet_name, pet_type, pet_img || null];
+        await postgre.query(sql, data);
 
         calculationResults = calculateResult(arrayResponses);
         const { petiType, aProportion, eProportion, cProportion, lProportion } = calculationResults;

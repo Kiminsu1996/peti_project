@@ -9,9 +9,6 @@ const io = socketIo(server);
 
 app.use(express.json());
 
-const accountRouter = require('./src/routes/account');
-app.use('/account', accountRouter);
-
 const questionRouter = require('./src/routes/question');
 app.use('/question', questionRouter);
 
@@ -26,9 +23,6 @@ app.use('/questionList', questionListRouter);
 
 const petiDescriptionRouter = require('./src/routes/petiDescriptionList');
 app.use('/petiDescriptionList', petiDescriptionRouter);
-
-const petiChemistryRouter = require('./src/routes/petiChemistryList');
-app.use('/petiChemistryList', petiChemistryRouter);
 
 //클라이언트가 서버에 연결이 되면 실행
 io.on('connection', (socket) => {
