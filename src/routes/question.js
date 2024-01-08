@@ -8,8 +8,8 @@ questionRouter.get('/:type', async (req, res, next) => {
     const type = req.params.type; //동물 종류 (강아지, 고양이)
     const result = {
         success: false,
-        data: null,
         totalQuestions: null,
+        data: null,
     };
 
     try {
