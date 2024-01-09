@@ -1,93 +1,57 @@
 const resultRouter = require('express').Router();
 const { postgre } = require('../config/database/postgre');
-const calculateResult = require('../models/typeCalculations');
-const { selectTypeDescription } = require('../models/selectTypeDescription');
-const { selectTypeChemistry } = require('../models/selectTypeChemistry');
-const updatePetiResult = require('../models/updatePetiResult');
 const uuid4 = require('uuid4');
-const getRedisClient = require('../config/redisConfig');
+
+const { BadRequestException } = require('../module/Exception');
 
 resultRouter.post('/', async (req, res, next) => {
-    const { arrayResponses, pet_name, pet_type, pet_img } = req.body;
+    const { arrayResponses, petName, petType, petImg } = req.body;
     let conn = null;
-    let calculationResults = null;
     const uuid = uuid4().replace(/-/g, '').substring(0, 10); // - 없앤 10글자
-    const redisClient = getRedisClient();
-    let typeScores = {};
-    let typePercentages = {};
-    const userScores = [];
-
-    const result = {
-        success: false,
-        message: null,
-    };
 
     try {
-        if (!arrayResponses || !pet_name || !pet_type) {
-            result.message = 'Please enter the data';
-            return res.status(400).send(result);
+        if (!arrayResponses || !petName || !petType) {
+            return next(new BadRequestException('value is invalid'));
         }
-
         conn = await postgre.connect();
-
-        const key = `questions:${pet_type}:${pet_name}`;
-        const questionList = await redisClient.lRange(key, 0, -1);
-        const typeRanges = {
-            활동성: { start: 1, end: 5 },
-            식탐성: { start: 6, end: 10 },
-            사교성: { start: 11, end: 15 },
-            애교성: { start: 16, end: 20 },
-        };
-
-        const typeScores = {
-            활동성: { userScore: 0, maxScore: 0, minScore: 0 },
-            식탐성: { userScore: 0, maxScore: 0, minScore: 0 },
-            사교성: { userScore: 0, maxScore: 0, minScore: 0 },
-            애교성: { userScore: 0, maxScore: 0, minScore: 0 },
-        };
-        // console.log(arrayResponses);
-        // console.log('questionList : ', questionList);
-
-        //질문을 idx 순서대로 정렬
-        const questionWeights = questionList
-            .map((q) => JSON.parse(q))
-            .sort((a, b) => a.idx - b.idx) // 질문을 idx 기준으로 정렬
-            .map((q) => {
-                // typeScores 객체 만들기
-                if (!typeScores[q.question_type]) {
-                    typeScores[q.question_type] = { userScore: 0, maxScore: 0, minScore: 0 };
-                }
-                return { idx: q.idx, weight: q.weight, type: q.question_type };
-            });
-        // console.log(questionWeights);
 
         //프론트에서 받은 결과 값을 idx 순서대로 정렬
         const sortedResponses = arrayResponses.flat().sort((a, b) => a.idx - b.idx);
-        // console.log(sortedResponses);
+        const arrayResponsess = sortedResponses.map((r) => r.response);
+        const minIdx = Math.min(...sortedResponses.map((r) => r.idx));
+        const maxIdx = Math.max(...sortedResponses.map((r) => r.idx));
 
-        questionWeights.forEach((question) => {
-            const response = sortedResponses.find((r) => r.idx === question.idx);
-            if (response) {
-                const userScore = response.response * question.weight;
-                userScores.push({ type: question.type, score: userScore });
+        const queryResult = await postgre.query(
+            `SELECT 
+                idx AS "idx",
+                weight AS "weight"
+            FROM 
+                peti_question 
+            WHERE 
+                idx BETWEEN $1 AND $2
+            ORDER BY 
+                idx ASC`,
+            [minIdx, maxIdx]
+        );
+
+        const questionWeight = queryResult.rows.map((r) => r.weight);
+
+        const groupedResponses = arrayResponsess.reduce((acc, response, index) => {
+            const groupIndex = Math.floor(index / 5); // 5개씩 그룹을 만들기 위한 인덱스 계산
+
+            if (!acc[groupIndex]) {
+                acc[groupIndex] = []; // 새 그룹 생성
             }
+
+            acc[groupIndex].push(response); // 현재 그룹에 요소 추가
+            return acc;
+        }, []);
+
+        console.log(groupedResponses);
+
+        res.status(200).send({
+            uuid: uuid,
         });
-
-        console.log(userScores);
-
-        Object.keys(typeRanges).forEach((type) => {
-            const scores = userScores.filter((score) => score.type === type).map((score) => score.score);
-            typeScores[type].userScore = scores.reduce((acc, score) => acc + score, 0);
-        });
-
-        Object.keys(typeScores).forEach((type) => {
-            const scores = typeScores[type];
-            const percentage = ((scores.userScore - scores.minScore) / (scores.maxScore - scores.minScore)) * 100;
-            typePercentages[type] = percentage;
-        });
-
-        result.success = true;
-        res.status(200).send(result);
     } catch (error) {
         return next(error);
     } finally {

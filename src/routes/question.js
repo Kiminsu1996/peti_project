@@ -1,55 +1,60 @@
 const questionRouter = require('express').Router();
-const getQuestions = require('../models/selectQuestion');
-const getRedisClient = require('../config/redisConfig');
+const { postgre } = require('../config/database/postgre');
+const { BadRequestException, HttpException } = require('../module/Exception');
 
 questionRouter.get('/:type', async (req, res, next) => {
-    let page = parseInt(req.query.page || 1);
-    const pet_name = req.query.pet_name; //동물 이름
     const type = req.params.type; //동물 종류 (강아지, 고양이)
-    const result = {
-        success: false,
-        totalQuestions: null,
-        data: null,
-    };
+    let conn = null;
 
     try {
-        const itemsPerPage = 5;
-        const key = `questions:${type}:${pet_name}`; // Redis 키
-        const redisClient = getRedisClient();
+        conn = await postgre.connect();
 
-        // 페이지 값이 숫자가 아니거나 1 미만일 경우 에러 메시지를 반환
-        if (isNaN(page) || page < 1) {
-            result.message = 'Page not found';
-            return res.status(400).send(result);
+        if (Object.keys(req.query).length !== 0 || !['dog', 'cat'].includes(type)) {
+            return next(new BadRequestException('Wrong information'));
         }
 
-        if (!pet_name || !type || pet_name === '' || type === '') {
-            result.message = 'wrong informaiton';
-            return res.status(400).send(result);
+        //질문을 찾는 쿼리문
+        const idxRange = type === 'dog' ? [1, 20] : [21, 40];
+        const queryResult = await postgre.query(
+            `SELECT 
+                idx AS "idx",
+                question AS "question",
+                type AS "type", 
+                left_option AS "leftOption",
+                right_option AS "rightOption",
+                question_type AS "questionType",
+                weight AS "wegight"
+            FROM 
+                peti_question 
+            WHERE 
+                type = $1 
+            AND 
+                idx 
+            BETWEEN 
+                $2 
+            AND 
+                $3 
+            ORDER BY RANDOM()`,
+            [type, ...idxRange]
+        );
+
+        if (!queryResult.rows || queryResult.rows.length === 0) {
+            return next(new HttpException(404, 'Questions Not Found'));
         }
 
-        await getQuestions(type, pet_name); //Redis에 질문 저장
-        const start = (page - 1) * itemsPerPage;
-        const end = start + itemsPerPage - 1;
-
-        // Redis에서 데이터 조회
-        const questions = await redisClient.lRange(key, start, end);
-        const totalQuestions = await redisClient.lLen(key);
-        if (!questions.length) {
-            result.message = 'No more questions';
-            return res.status(404).send(result);
-        }
-
-        // JSON으로 파싱하여 결과에 추가
-        const paginatedData = questions.map((question) => JSON.parse(question));
-
-        result.success = true;
-        result.data = paginatedData;
-        result.totalQuestions = totalQuestions;
-        res.status(200).send(result);
+        res.status(200).send({
+            success: true,
+            totalQuestions: queryResult.rows.length,
+            data: queryResult.rows,
+        });
     } catch (error) {
         return next(error);
+    } finally {
+        if (conn) {
+            conn.end();
+        }
     }
 });
 
 module.exports = questionRouter;
+

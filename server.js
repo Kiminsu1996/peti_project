@@ -24,6 +24,8 @@ app.use('/questionList', questionListRouter);
 const petiDescriptionRouter = require('./src/routes/petiDescriptionList');
 app.use('/petiDescriptionList', petiDescriptionRouter);
 
+const { HttpException } = require('./src/module/Exception');
+
 //클라이언트가 서버에 연결이 되면 실행
 io.on('connection', (socket) => {
     console.log('user connected');
@@ -33,7 +35,7 @@ io.on('connection', (socket) => {
         console.log(`user join: ${room}`);
     });
 
-    socket.on('sendMessage', (data) => {
+    socket.on('message', (data) => {
         // 메시지를 해당 방의 모든 사용자에게 전송
         io.to(data.room).emit('message', { sender: data.sender, message: data.message });
     });
@@ -45,11 +47,22 @@ io.on('connection', (socket) => {
 });
 
 app.use((error, req, res, next) => {
+    if (error instanceof SyntaxError) {
+        return res.status(400).send({
+            message: 'invalid json',
+        });
+    }
+
+    if (error instanceof HttpException) {
+        return res.status(error.status).send({
+            message: error.message,
+        });
+    }
+
     console.log(error);
-    const statusCode = error.status || 500;
-    res.status(statusCode).json({
-        success: false,
-        message: error.message,
+
+    res.status(500).send({
+        message: 'Unexpected Error Occured',
     });
 });
 
@@ -60,3 +73,9 @@ server.listen(port, () => {
 //500은 서버에서 애러발생
 //404 Not Found (페이지를 찾을 수 없음)
 //400 클라이언트에서 받은 요청이 이상할 때 예)잘못된 데이터를 줄때
+// 400
+// 401
+// 403
+// 404
+// 409
+// 500
