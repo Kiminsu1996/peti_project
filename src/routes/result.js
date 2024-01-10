@@ -36,17 +36,10 @@ resultRouter.post('/', async (req, res, next) => {
 
         const questionWeight = queryResult.rows.map((r) => r.weight);
 
-        const groupedResponses = arrayResponsess.reduce((acc, response, index) => {
-            const groupIndex = Math.floor(index / 5); // 5개씩 그룹을 만들기 위한 인덱스 계산
-
-            if (!acc[groupIndex]) {
-                acc[groupIndex] = []; // 새 그룹 생성
-            }
-
-            acc[groupIndex].push(response); // 현재 그룹에 요소 추가
-            return acc;
-        }, []);
-
+        const groupedResponses = [];
+        for (let i = 0; i < arrayResponsess.length; i += 5) {
+            groupedResponses.push(arrayResponsess.slice(i, i + 5));
+        }
         console.log(groupedResponses);
 
         res.status(200).send({

@@ -57,4 +57,3 @@ questionRouter.get('/:type', async (req, res, next) => {
 });
 
 module.exports = questionRouter;
-
