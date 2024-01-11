@@ -25,10 +25,12 @@ resultRouter.post('/', async (req, res, next) => {
         conn = await postgre.connect();
 
         //프론트에서 받은 결과 값을 idx 순서대로 정렬
-        const sortedResponses = arrayResponses.flat().sort((start, end) => start.idx - end.idx);
+        const sortedResponses = arrayResponses.sort((start, end) => start.idx - end.idx);
         const arrayResponsess = sortedResponses.map((client) => client.response);
         const minIdx = Math.min(...sortedResponses.map((min) => min.idx));
         const maxIdx = Math.max(...sortedResponses.map((max) => max.idx));
+
+        console.log(sortedResponses);
 
         const queryResult = await postgre.query(
             `SELECT 
@@ -48,9 +50,6 @@ resultRouter.post('/', async (req, res, next) => {
         // arrayResponsess(프론트 값) 과 questionWeight(DB의 weight값) 을 idx 별로 곲하기
         const multipliedResponses = arrayResponsess.map((response, index) => response * questionWeight[index]);
 
-        // console.log(questionWeight);
-        // console.log(multipliedResponses);
-
         //idx와 weight의 곱한 값을 5개씩 배열에 저장하기
         for (let i = 0; i < multipliedResponses.length; i += 5) {
             //프론트엔드에서 받은 값을 5개씩 자르기
@@ -66,38 +65,32 @@ resultRouter.post('/', async (req, res, next) => {
         for (let i = 0; i < questionWeight.length; i += 5) {
             questionWeightArray.push(questionWeight.slice(i, i + 5));
         }
-        // console.log(questionWeightArray);
 
         //가중치를 가지고 최대가능점수 계산
         const maxSum = questionWeightArray.slice(0, 4).map((group) => group.reduce((sum, num) => sum + Math.abs(num) * 3, 0));
-        // console.log(maxSum);
+        const minusSum = questionWeightArray.slice(0, 4).map((group) => group.reduce((sum, num) => sum + Math.abs(num) * -3, 0)); // sum은 배열의 값을 누적 저장하는 변수
 
-        const minusSum = questionWeightArray.slice(0, 4).map((group) => group.reduce((sum, num) => sum + Math.abs(num) * -3, 0));
-
-        // console.log(minusSum);
         //각 유형별 가중치 계산
         const weightPercentages = sumsOfGroupedResponses.map((userScore, index) => {
             const maxScore = maxSum[index];
             const minScore = minusSum[index];
-            console.log(userScore);
             return parseInt(((userScore - minScore) / (maxScore - minScore)) * 100);
         });
 
-        console.log(weightPercentages);
         // 가중치퍼센트 결과를 가지고 유형 검사
         weightPercentages.forEach((value, index) => {
             switch (index) {
                 case 0:
-                    proportions.aProportion = value > 50 ? 'A' : 'H';
+                    proportions.aProportion = value >= 50 ? (value > 50 ? 'A' : 'H') : sortedResponses[0].response > 0 ? 'A' : 'H';
                     break;
                 case 1:
-                    proportions.eProportion = value > 50 ? 'B' : 'S';
+                    proportions.eProportion = value >= 50 ? (value > 50 ? 'B' : 'S') : sortedResponses[5].response > 0 ? 'B' : 'S';
                     break;
                 case 2:
-                    proportions.cProportion = value > 50 ? 'E' : 'I';
+                    proportions.cProportion = value >= 50 ? (value > 50 ? 'E' : 'I') : sortedResponses[10].response > 0 ? 'E' : 'I';
                     break;
                 case 3:
-                    proportions.lProportion = value > 50 ? 'L' : 'C';
+                    proportions.lProportion = value >= 50 ? (value > 50 ? 'L' : 'C') : sortedResponses[15].response > 0 ? 'L' : 'C';
                     break;
                 default:
                     break;
@@ -107,6 +100,8 @@ resultRouter.post('/', async (req, res, next) => {
         // peti 검사유형 단어조합
         peti = `${proportions.aProportion}${proportions.eProportion}${proportions.cProportion}${proportions.lProportion}`;
 
+        console.log(peti);
+        // console.log(peti);
         // const petiResult = `INSERT INTO
         //                         result
         //                             (peti, uuid, a_proportion, e_proportion, c_proportion, l_proportion, pet_name, pet_type, pet_img)
