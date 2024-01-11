@@ -3,9 +3,9 @@
     "version": "2.2.12",
     "width": 4000,
     "height": 4000,
-    "scrollTop": -898.0000000000073,
-    "scrollLeft": -874.7999999999936,
-    "zoomLevel": 0.9,
+    "scrollTop": -1030.0000000000073,
+    "scrollLeft": -761.7999999999936,
+    "zoomLevel": 0.8,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -213,7 +213,7 @@
           "active": false,
           "left": 741.0278,
           "top": 1198.8553,
-          "zIndex": 10,
+          "zIndex": 4,
           "widthName": 60,
           "widthComment": 120,
           "color": "#795548"
@@ -368,7 +368,7 @@
           "active": false,
           "left": 1305.1449,
           "top": 1269.4831,
-          "zIndex": 19,
+          "zIndex": 7,
           "widthName": 60,
           "widthComment": 96.61181640625,
           "color": "#03A9F4"
@@ -459,7 +459,7 @@
               "autoIncrement": false,
               "primaryKey": false,
               "unique": false,
-              "notNull": false
+              "notNull": true
             },
             "ui": {
               "active": false,
@@ -612,10 +612,10 @@
           }
         ],
         "ui": {
-          "active": false,
+          "active": true,
           "left": 1698.9558,
           "top": 857.0672,
-          "zIndex": 17,
+          "zIndex": 10,
           "widthName": 60,
           "widthComment": 120,
           "color": "#673AB7"
@@ -810,7 +810,7 @@
           "active": false,
           "left": 277.25,
           "top": 1532.2,
-          "zIndex": 4,
+          "zIndex": 2,
           "widthName": 60,
           "widthComment": 60,
           "color": "#795548"
@@ -873,7 +873,7 @@
           "active": false,
           "left": 453.5005,
           "top": 914.6724,
-          "zIndex": 18,
+          "zIndex": 6,
           "widthName": 60,
           "widthComment": 60,
           "color": "#795548"
@@ -982,7 +982,7 @@
           "active": false,
           "left": 1014.2218,
           "top": 869.6449,
-          "zIndex": 21,
+          "zIndex": 8,
           "widthName": 60,
           "widthComment": 60,
           "color": "#795548"
@@ -1091,7 +1091,7 @@
           "active": false,
           "left": 767.555,
           "top": 1680.394,
-          "zIndex": 9,
+          "zIndex": 3,
           "widthName": 105.35888671875,
           "widthComment": 60,
           "color": "#2196F3"

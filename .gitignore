@@ -1,5 +1,6 @@
 node_modules/
 peti.vuerd.json
-newPeti.vuerd.json
 test.vuerd.json
+newPeti.vuerd.json
+
 .env

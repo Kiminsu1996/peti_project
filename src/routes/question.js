@@ -25,7 +25,7 @@ questionRouter.get('/:type', async (req, res, next) => {
                 question_type AS "questionType",
                 weight AS "wegight"
             FROM 
-                peti_question 
+                question 
             WHERE 
                 type = $1 
             AND 
