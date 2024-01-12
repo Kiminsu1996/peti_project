@@ -2,4 +2,5 @@ node_modules/
 peti.vuerd.json
 test.vuerd.json
 newPeti.vuerd.json
+type.json
 .env

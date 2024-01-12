@@ -8,7 +8,9 @@ const config = {
 };
 
 const postgre = new Pool(config);
+const pgPool = new Pool(config);
 
 module.exports = {
     postgre,
+    pgPool,
 };

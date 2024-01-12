@@ -123,9 +123,11 @@ petiDescriptionRouter.post('/', async (req, res) => {
 
         for (let i = 0; i < peti_eng_name.length; i++) {
             const sql = `
-            INSERT INTO peti
-            (peti_eng_name, peti_kor_name, compatible, incompatible, summary, description)
-            VALUES ($1, $2, $3, $4, $5, $6)`;
+            INSERT INTO 
+                peti
+                    (peti_eng_name, peti_kor_name, compatible, incompatible, summary, description)
+            VALUES 
+                ($1, $2, $3, $4, $5, $6)`;
             const value = [peti_eng_name[i], peti_kor_name[i], compatible[i], incompatible[i], summary[i], description[i]];
             await postgre.query(sql, value);
         }

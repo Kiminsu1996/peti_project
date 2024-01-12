@@ -18,11 +18,17 @@ app.use('/result', resultRouter);
 const chatRouter = require('./src/routes/chat');
 app.use('/chat', chatRouter);
 
+const typeRouter = require('./src/routes/type');
+app.use('/type', typeRouter);
+
 const questionListRouter = require('./src/routes/questionList');
 app.use('/questionList', questionListRouter);
 
 const petiDescriptionRouter = require('./src/routes/petiDescriptionList');
 app.use('/petiDescriptionList', petiDescriptionRouter);
+
+const typeListRouter = require('./src/routes/typeList');
+app.use('/typeList', typeListRouter);
 
 const { HttpException } = require('./src/module/Exception');
 

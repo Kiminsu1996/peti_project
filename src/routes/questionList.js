@@ -195,9 +195,11 @@ questionListRouter.post('/', async (req, res) => {
             const questionType = determineQuestionType(i + 1);
             const typeLists = typeList(i + 1);
             const sql = `
-            INSERT INTO peti_question 
-            (question, type, left_option, right_option, question_type, weight) 
-            VALUES ($1, $2, $3, $4, $5, $6)`;
+            INSERT INTO 
+                peti_question 
+                    (question, type, left_option, right_option, question_type, weight) 
+            VALUES 
+                ($1, $2, $3, $4, $5, $6)`;
             const value = [question[i], typeLists, left_option[i], right_option[i], questionType, weight[i]];
             await postgre.query(sql, value);
         }

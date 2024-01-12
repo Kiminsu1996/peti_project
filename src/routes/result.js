@@ -3,6 +3,7 @@ const { postgre } = require('../config/database/postgre');
 const uuid4 = require('uuid4');
 
 const { BadRequestException } = require('../module/Exception');
+const { returnAlphbet } = require('../module/cal');
 
 resultRouter.post('/', async (req, res, next) => {
     const { arrayResponses, petName, petType, petImg } = req.body;
@@ -12,12 +13,6 @@ resultRouter.post('/', async (req, res, next) => {
     const sumsOfGroupedResponses = [];
     const questionWeightArray = [];
     let peti = null;
-    let proportions = {
-        aProportion: null,
-        eProportion: null,
-        cProportion: null,
-        lProportion: null,
-    };
     try {
         if (!arrayResponses || !petName || !petType) {
             return next(new BadRequestException('value is invalid'));
@@ -79,50 +74,8 @@ resultRouter.post('/', async (req, res, next) => {
             const minScore = minusSum[index];
             return parseInt(((userScore - minScore) / (maxScore - minScore)) * 100);
         });
-
-        // 가중치퍼센트 결과를 가지고 유형 검사
-        weightPercentages.forEach((value, index) => {
-            switch (index) {
-                case 0:
-                    if (value > 50) {
-                        proportions.aProportion = 'A';
-                    } else if (value < 50) {
-                        proportions.aProportion = 'H';
-                    } else {
-                        proportions.aProportion = sortedResponses[0].response > 0 ? 'A' : 'H';
-                    }
-                    break;
-                case 1:
-                    if (value > 50) {
-                        proportions.eProportion = 'B';
-                    } else if (value < 50) {
-                        proportions.eProportion = 'S';
-                    } else {
-                        proportions.eProportion = sortedResponses[5].response > 0 ? 'B' : 'S';
-                    }
-                    break;
-                case 2:
-                    if (value > 50) {
-                        proportions.cProportion = 'E';
-                    } else if (value < 50) {
-                        proportions.cProportion = 'I';
-                    } else {
-                        proportions.cProportion = sortedResponses[10].response > 0 ? 'E' : 'I';
-                    }
-                    break;
-                case 3:
-                    if (value > 50) {
-                        proportions.lProportion = 'L';
-                    } else if (value < 50) {
-                        proportions.lProportion = 'C';
-                    } else {
-                        proportions.lProportion = sortedResponses[15].response > 0 ? 'L' : 'C';
-                    }
-                    break;
-                default:
-                    break;
-            }
-        });
+        // 가중치퍼센트 결과를 가지고 유형 검사 weightPercentages
+        const proportions = returnAlphbet(weightPercentages);
 
         // peti 검사유형 단어조합
         peti = `${proportions.aProportion}${proportions.eProportion}${proportions.cProportion}${proportions.lProportion}`;
@@ -175,8 +128,6 @@ resultRouter.post('/', async (req, res, next) => {
                             WHERE 
                                 result.uuid = $1`;
         const finalResult = await postgre.query(resultQuery, [uuid]);
-
-        console.log(finalResult.rows);
 
         res.status(200).send({
             result: {
