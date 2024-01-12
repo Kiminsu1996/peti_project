@@ -22,6 +22,9 @@ resultRouter.post('/', async (req, res, next) => {
         if (!arrayResponses || !petName || !petType) {
             return next(new BadRequestException('value is invalid'));
         }
+
+        //예외처리 더 빡시게 하기
+
         conn = await postgre.connect();
 
         //프론트에서 받은 결과 값을 idx 순서대로 정렬
@@ -30,7 +33,7 @@ resultRouter.post('/', async (req, res, next) => {
         const minIdx = Math.min(...sortedResponses.map((min) => min.idx));
         const maxIdx = Math.max(...sortedResponses.map((max) => max.idx));
 
-        console.log(sortedResponses);
+        // console.log(sortedResponses);
 
         const queryResult = await postgre.query(
             `SELECT 
@@ -68,7 +71,7 @@ resultRouter.post('/', async (req, res, next) => {
 
         //가중치를 가지고 최대가능점수 계산
         const maxSum = questionWeightArray.slice(0, 4).map((group) => group.reduce((sum, num) => sum + Math.abs(num) * 3, 0));
-        const minusSum = questionWeightArray.slice(0, 4).map((group) => group.reduce((sum, num) => sum + Math.abs(num) * -3, 0)); // sum은 배열의 값을 누적 저장하는 변수
+        const minusSum = questionWeightArray.slice(0, 4).map((group) => group.reduce((sum, num) => sum + Math.abs(num) * -3, 0));
 
         //각 유형별 가중치 계산
         const weightPercentages = sumsOfGroupedResponses.map((userScore, index) => {
@@ -81,16 +84,40 @@ resultRouter.post('/', async (req, res, next) => {
         weightPercentages.forEach((value, index) => {
             switch (index) {
                 case 0:
-                    proportions.aProportion = value >= 50 ? (value > 50 ? 'A' : 'H') : sortedResponses[0].response > 0 ? 'A' : 'H';
+                    if (value > 50) {
+                        proportions.aProportion = 'A';
+                    } else if (value < 50) {
+                        proportions.aProportion = 'H';
+                    } else {
+                        proportions.aProportion = sortedResponses[0].response > 0 ? 'A' : 'H';
+                    }
                     break;
                 case 1:
-                    proportions.eProportion = value >= 50 ? (value > 50 ? 'B' : 'S') : sortedResponses[5].response > 0 ? 'B' : 'S';
+                    if (value > 50) {
+                        proportions.eProportion = 'B';
+                    } else if (value < 50) {
+                        proportions.eProportion = 'S';
+                    } else {
+                        proportions.eProportion = sortedResponses[5].response > 0 ? 'B' : 'S';
+                    }
                     break;
                 case 2:
-                    proportions.cProportion = value >= 50 ? (value > 50 ? 'E' : 'I') : sortedResponses[10].response > 0 ? 'E' : 'I';
+                    if (value > 50) {
+                        proportions.cProportion = 'E';
+                    } else if (value < 50) {
+                        proportions.cProportion = 'I';
+                    } else {
+                        proportions.cProportion = sortedResponses[10].response > 0 ? 'E' : 'I';
+                    }
                     break;
                 case 3:
-                    proportions.lProportion = value >= 50 ? (value > 50 ? 'L' : 'C') : sortedResponses[15].response > 0 ? 'L' : 'C';
+                    if (value > 50) {
+                        proportions.lProportion = 'L';
+                    } else if (value < 50) {
+                        proportions.lProportion = 'C';
+                    } else {
+                        proportions.lProportion = sortedResponses[15].response > 0 ? 'L' : 'C';
+                    }
                     break;
                 default:
                     break;
@@ -100,28 +127,62 @@ resultRouter.post('/', async (req, res, next) => {
         // peti 검사유형 단어조합
         peti = `${proportions.aProportion}${proportions.eProportion}${proportions.cProportion}${proportions.lProportion}`;
 
-        console.log(peti);
-        // console.log(peti);
-        // const petiResult = `INSERT INTO
-        //                         result
-        //                             (peti, uuid, a_proportion, e_proportion, c_proportion, l_proportion, pet_name, pet_type, pet_img)
-        //                         VALUES
-        //                             ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
-        // const value = [
-        //     peti,
-        //     uuid,
-        //     weightPercentages[0],
-        //     weightPercentages[1],
-        //     weightPercentages[2],
-        //     weightPercentages[3],
-        //     petName,
-        //     petType,
-        //     petImg,
-        // ];
-        // await postgre.query(petiResult, value);
+        const petiResult = `INSERT INTO
+                                result
+                                    (peti_eng_name, uuid, a_proportion, e_proportion, c_proportion, l_proportion, pet_name, pet_type, pet_img)
+                                VALUES
+                                    ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+        const value = [
+            peti,
+            uuid,
+            weightPercentages[0],
+            weightPercentages[1],
+            weightPercentages[2],
+            weightPercentages[3],
+            petName,
+            petType,
+            petImg,
+        ];
+        await postgre.query(petiResult, value);
+
+        const resultQuery = `
+                            SELECT
+                                result.idx,
+                                result.pet_name,
+                                result.pet_type,
+                                result.pet_img,
+                                result.a_proportion,
+                                result.e_proportion,
+                                result.c_proportion,
+                                result.l_proportion,
+                                result.uuid,
+                                result.peti_eng_name AS peti_type,
+                                peti.peti_kor_name,
+                                peti.compatible,
+                                peti_compatible.peti_kor_name AS compatible_kor_name, 
+                                peti.incompatible,
+                                peti_incompatible.peti_kor_name AS incompatible_kor_name,
+                                peti.summary,
+                                peti.description
+                            FROM 
+                                result
+                            JOIN 
+                                peti ON result.peti_eng_name = peti.peti_eng_name
+                            LEFT JOIN 
+                                peti peti_compatible ON peti.compatible = peti_compatible.peti_eng_name
+                            LEFT JOIN 
+                                peti peti_incompatible ON peti.incompatible = peti_incompatible.peti_eng_name
+                            WHERE 
+                                result.uuid = $1`;
+        const finalResult = await postgre.query(resultQuery, [uuid]);
+
+        console.log(finalResult.rows);
 
         res.status(200).send({
-            uuid: uuid,
+            result: {
+                success: true,
+                data: finalResult.rows,
+            },
         });
     } catch (error) {
         return next(error);
@@ -132,33 +193,4 @@ resultRouter.post('/', async (req, res, next) => {
     }
 });
 
-resultRouter.get('/user', async (req, res, next) => {
-    const uuid = req.query.uuid;
-});
-
 module.exports = resultRouter;
-
-// 20,  13, -15, 10, -14,
-// 20,  11, 11, -12,  14,
-//20,  14, 15, -15, 12,
-//20, -15, 14,  14, 11
-// ]
-// [
-//   [ 1, 1, -2, 3, -1 ],
-//   [ -1, -3, -1, 2, -2 ],
-//   [ -1, -2, 3, -2, 1 ],
-//   [ 1, 3, -1, 2, 1 ]
-
-// 20, 13,30,30,14,
-// -20, -33, -11, -24, -28
-//-20, -28, 45, 30, 12
-// 20 , -45, -14, 28, 11
-
-// 107, -116, 39, 0
-
-// [
-//     [ 10, 3.5, 7.5, 5, 7 ],
-//     [ 10, 2.5, 5.5, 6, 7 ],
-//     [ 10, 2, 3.5, 3.5, 6 ],
-//     [ 10, 5.5, 1, 2, 3.5 ]
-//   ]
