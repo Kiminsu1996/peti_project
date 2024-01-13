@@ -10,17 +10,21 @@ const io = socketIo(server);
 app.use(express.json());
 
 const questionRouter = require('./src/routes/question');
-app.use('/question', questionRouter);
+app.use('/peti/question', questionRouter);
 
 const resultRouter = require('./src/routes/result');
-app.use('/result', resultRouter);
+app.use('/peti/result', resultRouter);
 
 const chatRouter = require('./src/routes/chat');
 app.use('/chat', chatRouter);
 
 const typeRouter = require('./src/routes/type');
-app.use('/type', typeRouter);
+app.use('/peti/type', typeRouter);
 
+const petiRouter = require('./src/routes/peti');
+app.use('/peti', petiRouter);
+
+// seeding
 const questionListRouter = require('./src/routes/questionList');
 app.use('/questionList', questionListRouter);
 
