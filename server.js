@@ -10,19 +10,19 @@ const io = socketIo(server);
 app.use(express.json());
 
 const questionRouter = require('./src/routes/question');
-app.use('/peti/question', questionRouter);
+app.use('/', questionRouter);
 
 const resultRouter = require('./src/routes/result');
-app.use('/peti/result', resultRouter);
+app.use('/', resultRouter);
 
 const chatRouter = require('./src/routes/chat');
-app.use('/chat', chatRouter);
+app.use('/', chatRouter);
 
 const typeRouter = require('./src/routes/type');
-app.use('/peti/type', typeRouter);
+app.use('/', typeRouter);
 
 const petiRouter = require('./src/routes/peti');
-app.use('/peti', petiRouter);
+app.use('/', petiRouter);
 
 // seeding
 const questionListRouter = require('./src/routes/questionList');
@@ -83,9 +83,3 @@ server.listen(port, () => {
 //500은 서버에서 애러발생
 //404 Not Found (페이지를 찾을 수 없음)
 //400 클라이언트에서 받은 요청이 이상할 때 예)잘못된 데이터를 줄때
-// 400
-// 401
-// 403
-// 404
-// 409
-// 500

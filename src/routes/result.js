@@ -5,8 +5,8 @@ const uuid4 = require('uuid4');
 const { BadRequestException } = require('../module/Exception');
 const { returnAlphbet } = require('../module/cal');
 
-resultRouter.post('/', async (req, res, next) => {
-    const { arrayResponses, petName, petType, petImg } = req.body;
+resultRouter.post('/peti', async (req, res, next) => {
+    const { qusetionAnswerlist, petName, petType, petImg } = req.body;
     let conn = null;
     const uuid = uuid4().replace(/-/g, '').substring(0, 10); // - 없앤 10글자
     const groupedResponses = [];
@@ -14,7 +14,7 @@ resultRouter.post('/', async (req, res, next) => {
     const questionWeightArray = [];
     let peti = null;
     try {
-        if (!arrayResponses || !petName || !petType) {
+        if (!qusetionAnswerlist || !petName || !petType) {
             return next(new BadRequestException('value is invalid'));
         }
 
@@ -23,8 +23,8 @@ resultRouter.post('/', async (req, res, next) => {
         conn = await postgre.connect();
 
         //프론트에서 받은 결과 값을 idx 순서대로 정렬
-        const sortedResponses = arrayResponses.sort((start, end) => start.idx - end.idx);
-        const arrayResponsess = sortedResponses.map((client) => client.response);
+        const sortedResponses = qusetionAnswerlist.sort((start, end) => start.idx - end.idx);
+        const arrayResponses = sortedResponses.map((client) => client.response);
         const minIdx = Math.min(...sortedResponses.map((min) => min.idx));
         const maxIdx = Math.max(...sortedResponses.map((max) => max.idx));
 
@@ -45,8 +45,8 @@ resultRouter.post('/', async (req, res, next) => {
 
         //DB에 저장된 질문의 weight만 가져오기
         const questionWeight = queryResult.rows.map((question) => question.weight / 10);
-        // arrayResponsess(프론트 값) 과 questionWeight(DB의 weight값) 을 idx 별로 곲하기
-        const multipliedResponses = arrayResponsess.map((response, index) => response * questionWeight[index]);
+        // arrayResponses(프론트 값) 과 questionWeight(DB의 weight값) 을 idx 별로 곲하기
+        const multipliedResponses = arrayResponses.map((response, index) => response * questionWeight[index]);
 
         //idx와 weight의 곱한 값을 5개씩 배열에 저장하기
         for (let i = 0; i < multipliedResponses.length; i += 5) {
@@ -75,19 +75,19 @@ resultRouter.post('/', async (req, res, next) => {
             return parseInt(((userScore - minScore) / (maxScore - minScore)) * 100);
         });
         // 가중치퍼센트 결과를 가지고 유형 검사 weightPercentages
-        const proportions = returnAlphbet(weightPercentages);
+        const proportions = returnAlphbet(weightPercentages, sortedResponses);
 
         // peti 검사유형 단어조합
         peti = `${proportions.aProportion}${proportions.eProportion}${proportions.cProportion}${proportions.lProportion}`;
 
         const petiResult = `INSERT INTO
                                 result
-                                    (peti_eng_name, uuid, a_proportion, e_proportion, c_proportion, l_proportion, pet_name, pet_type, pet_img)
+                                    (uuid, peti_eng_name, a_proportion, e_proportion, c_proportion, l_proportion, pet_name, pet_type, pet_img)
                                 VALUES
                                     ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
         const value = [
-            peti,
             uuid,
+            peti,
             weightPercentages[0],
             weightPercentages[1],
             weightPercentages[2],
@@ -100,7 +100,7 @@ resultRouter.post('/', async (req, res, next) => {
 
         const resultQuery = `
                             SELECT
-                                result.idx,
+                                result.uuid,
                                 result.pet_name,
                                 result.pet_type,
                                 result.pet_img,
@@ -108,7 +108,6 @@ resultRouter.post('/', async (req, res, next) => {
                                 result.e_proportion,
                                 result.c_proportion,
                                 result.l_proportion,
-                                result.uuid,
                                 result.peti_eng_name AS peti_type,
                                 peti.peti_kor_name,
                                 peti.compatible,
@@ -143,5 +142,7 @@ resultRouter.post('/', async (req, res, next) => {
         }
     }
 });
+
+resultRouter.post('/peti/result/:uuid', async (req, res) => {});
 
 module.exports = resultRouter;

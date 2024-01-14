@@ -4,7 +4,7 @@ const { BadRequestException, HttpException } = require('../module/Exception');
 const controller = require('../module/controller');
 
 questionRouter.get(
-    '/:type',
+    '/peti/question/:type',
     controller(async (req, res, next) => {
         const type = req.params.type; //동물 종류 (강아지, 고양이)
 

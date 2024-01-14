@@ -1,4 +1,4 @@
-const returnAlphbet = (resultList) => {
+const returnAlphbet = (resultList, sortedResponses) => {
     let proportions = {
         aProportion: null,
         eProportion: null,

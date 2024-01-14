@@ -1,7 +1,7 @@
 const petiRouter = require('express').Router();
 const { postgre } = require('../config/database/postgre');
 
-petiRouter.get('/all', async (req, res) => {
+petiRouter.get('/peti/all', async (req, res) => {
     let conn = null;
 
     try {
