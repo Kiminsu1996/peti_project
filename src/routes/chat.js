@@ -23,7 +23,7 @@ chatRouter.post('/chat', async (req, res, next) => {
 
         res.status(200).send({ lastIdx: idx });
     } catch (error) {
-    } finally {
+        console.log(error);
     }
 });
 
@@ -37,7 +37,11 @@ chatRouter.get('/chat/messages', async (req, res, next) => {
         }
         const query = `
             SELECT 
-                * 
+                idx,
+                result_uuid AS "uuid",
+                peti_eng_name AS "petiType",
+                message,
+                created
             FROM 
                 chat 
             WHERE 
@@ -51,7 +55,6 @@ chatRouter.get('/chat/messages', async (req, res, next) => {
         res.status(200).json(messages.rows);
     } catch (error) {
         console.log(error);
-    } finally {
     }
 });
 
