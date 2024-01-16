@@ -2,11 +2,7 @@ const petiRouter = require('express').Router();
 const { postgre } = require('../config/database/postgre');
 
 petiRouter.get('/peti/all', async (req, res) => {
-    let conn = null;
-
     try {
-        conn = await postgre.connect();
-
         const sql = `SELECT 
                         peti_eng_name AS "nameEn",
                         peti_kor_name AS "nameKr",
@@ -19,11 +15,7 @@ petiRouter.get('/peti/all', async (req, res) => {
 
         res.status(200).send(result.rows);
     } catch (error) {
-        console.log(error);
-    } finally {
-        if (conn) {
-            conn.end();
-        }
+        return next(error);
     }
 });
 

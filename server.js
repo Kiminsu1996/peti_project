@@ -57,6 +57,7 @@ io.on('connection', (socket) => {
 });
 
 app.use((error, req, res, next) => {
+    //req에서 json 형태가 아닐 경우
     if (error instanceof SyntaxError) {
         return res.status(400).send({
             message: 'invalid json',

@@ -1,11 +1,10 @@
 const resultRouter = require('express').Router();
 const { postgre } = require('../config/database/postgre');
 const uuid4 = require('uuid4');
-
-const { BadRequestException } = require('../module/Exception');
 const { returnAlphbet } = require('../module/cal');
+const { resultPostValidation } = require('../module/validate');
 
-resultRouter.post('/peti', async (req, res, next) => {
+resultRouter.post('/peti', resultPostValidation, async (req, res, next) => {
     const { qusetionAnswerlist, petName, petType, petImg } = req.body;
     let conn = null;
     const uuid = uuid4().replace(/-/g, '').substring(0, 10); // - 없앤 10글자
@@ -14,12 +13,6 @@ resultRouter.post('/peti', async (req, res, next) => {
     const questionWeightArray = [];
     let peti = null;
     try {
-        if (!qusetionAnswerlist || !petName || !petType) {
-            return next(new BadRequestException('value is invalid'));
-        }
-
-        //예외처리 더 빡시게 하기
-
         conn = await postgre.connect();
 
         //프론트에서 받은 결과 값을 idx 순서대로 정렬
@@ -143,6 +136,6 @@ resultRouter.post('/peti', async (req, res, next) => {
     }
 });
 
-resultRouter.post('/peti/result/:uuid', async (req, res) => {});
+resultRouter.get('/peti/result/:uuid', async (req, res) => {});
 
 module.exports = resultRouter;

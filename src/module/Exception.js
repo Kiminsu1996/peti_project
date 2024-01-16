@@ -1,6 +1,6 @@
 class HttpException {
-    message;
     status;
+    message;
     err;
 
     constructor(status, message, err = null) {
@@ -23,5 +23,3 @@ class NotFoundException extends HttpException {
 }
 
 module.exports = { HttpException, BadRequestException, NotFoundException };
-
-//수정하기

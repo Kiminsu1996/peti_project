@@ -1,12 +1,12 @@
 const questionRouter = require('express').Router();
 const { postgre, pgPool } = require('../config/database/postgre');
-const { BadRequestException, HttpException } = require('../module/Exception');
+const { BadRequestException } = require('../module/Exception');
 const controller = require('../module/controller');
 
 questionRouter.get(
-    '/peti/question/:type',
+    '/peti/question',
     controller(async (req, res, next) => {
-        const type = req.params.type; //동물 종류 (강아지, 고양이)
+        const { type } = req.query; //동물 종류 (강아지, 고양이)
 
         if (!['dog', 'cat'].includes(type)) {
             throw new BadRequestException('Wrong information');

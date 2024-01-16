@@ -2,11 +2,7 @@ const typeRouter = require('express').Router();
 const { postgre } = require('../config/database/postgre');
 
 typeRouter.get('/peti/type/all', async (req, res) => {
-    let conn = null;
-
     try {
-        conn = await postgre.connect();
-
         const sql = `SELECT 
                         element_kr AS "nameKr",
                         element_en AS "nameEn",
@@ -24,10 +20,6 @@ typeRouter.get('/peti/type/all', async (req, res) => {
         res.status(200).send(result.rows);
     } catch (error) {
         console.log(error);
-    } finally {
-        if (conn) {
-            conn.end();
-        }
     }
 });
 

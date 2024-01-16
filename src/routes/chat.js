@@ -1,15 +1,12 @@
 const chatRouter = require('express').Router();
 const { postgre } = require('../config/database/postgre');
+const { chatPostValidation, chatGetValidation } = require('../module/validate');
 
 // 채팅방 메세지 저장 API
-chatRouter.post('/chat', async (req, res, next) => {
+chatRouter.post('/chat', chatPostValidation, async (req, res, next) => {
     const { uuid, petiType, message } = req.body;
 
     try {
-        if (!uuid || !petiType || !message) {
-            throw new Error('애러에요');
-        }
-
         const result = await postgre.query(
             `INSERT INTO
                 chat
@@ -23,18 +20,15 @@ chatRouter.post('/chat', async (req, res, next) => {
 
         res.status(200).send({ lastIdx: idx });
     } catch (error) {
-        console.log(error);
+        return next(error);
     }
 });
 
 // 채팅방 메시지 조회 API
-chatRouter.get('/chat/messages', async (req, res, next) => {
+chatRouter.get('/chat/messages', chatGetValidation, async (req, res, next) => {
     const { lastIdx, petiType } = req.query;
     const limit = 50;
     try {
-        if (!lastIdx || !petiType) {
-            throw new Error('애러에요');
-        }
         const query = `
             SELECT 
                 idx,
@@ -54,7 +48,7 @@ chatRouter.get('/chat/messages', async (req, res, next) => {
 
         res.status(200).json(messages.rows);
     } catch (error) {
-        console.log(error);
+        return next(error);
     }
 });
 
