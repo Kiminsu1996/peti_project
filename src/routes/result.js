@@ -3,16 +3,20 @@ const { postgre } = require('../config/database/postgre');
 const uuid4 = require('uuid4');
 const { returnAlphbet } = require('../module/cal');
 const { resultPostValidation } = require('../module/validate');
+const controller = require('../module/controller');
 
-resultRouter.post('/peti', resultPostValidation, async (req, res, next) => {
-    const { qusetionAnswerlist, petName, petType, petImg } = req.body;
-    let conn = null;
-    const uuid = uuid4().replace(/-/g, '').substring(0, 10); // - 없앤 10글자
-    const groupedResponses = [];
-    const sumsOfGroupedResponses = [];
-    const questionWeightArray = [];
-    let peti = null;
-    try {
+resultRouter.post(
+    '/peti',
+    resultPostValidation,
+    controller(async (req, res, next) => {
+        const { qusetionAnswerlist, petName, petType, petImg } = req.body;
+        let conn = null;
+        const uuid = uuid4().replace(/-/g, '').substring(0, 10); // - 없앤 10글자
+        const groupedResponses = [];
+        const sumsOfGroupedResponses = [];
+        const questionWeightArray = [];
+        let peti = null;
+
         conn = await postgre.connect();
 
         //프론트에서 받은 결과 값을 idx 순서대로 정렬
@@ -127,15 +131,10 @@ resultRouter.post('/peti', resultPostValidation, async (req, res, next) => {
                 data: finalResult.rows,
             },
         });
-    } catch (error) {
-        return next(error);
-    } finally {
-        if (conn) {
-            conn.end();
-        }
-    }
-});
+    })
+);
 
+//밑에 보여주는 api 작성하기
 resultRouter.get('/peti/result/:uuid', async (req, res) => {});
 
 module.exports = resultRouter;
