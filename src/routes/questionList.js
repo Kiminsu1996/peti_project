@@ -1,9 +1,7 @@
 const questionListRouter = require('express').Router();
-const { postgre } = require('../config/database/postgre');
+const { pgPool } = require('../config/database/postgre');
 
 questionListRouter.post('/', async (req, res) => {
-    let conn = null;
-
     const question = [
         '산책이라는 말을 들으면 흥분해서 달려온다.', // 강아지 시작
         '장시간의 활동 후에도 에너지가 넘친다.',
@@ -189,8 +187,6 @@ questionListRouter.post('/', async (req, res) => {
     }
 
     try {
-        conn = await postgre.connect();
-
         for (let i = 0; i < question.length; i++) {
             const questionType = determineQuestionType(i + 1);
             const typeLists = typeList(i + 1);
@@ -201,16 +197,12 @@ questionListRouter.post('/', async (req, res) => {
             VALUES 
                 ($1, $2, $3, $4, $5, $6)`;
             const value = [question[i], typeLists, left_option[i], right_option[i], questionType, weight[i]];
-            await postgre.query(sql, value);
+            await pgPool.query(sql, value);
         }
 
         res.send('성공');
     } catch (error) {
-        console.log(error);
-    } finally {
-        if (conn) {
-            conn.end();
-        }
+        return next(error);
     }
 });
 

@@ -1,9 +1,7 @@
 const petiDescriptionRouter = require('express').Router();
-const { postgre } = require('../config/database/postgre');
+const { pgPool } = require('../config/database/postgre');
 
 petiDescriptionRouter.post('/', async (req, res) => {
-    let conn = null;
-
     const peti_eng_name = [
         'ABEL',
         'ABEC',
@@ -119,8 +117,6 @@ petiDescriptionRouter.post('/', async (req, res) => {
     ];
 
     try {
-        conn = await postgre.connect();
-
         for (let i = 0; i < peti_eng_name.length; i++) {
             const sql = `
             INSERT INTO 
@@ -129,16 +125,12 @@ petiDescriptionRouter.post('/', async (req, res) => {
             VALUES 
                 ($1, $2, $3, $4, $5, $6)`;
             const value = [peti_eng_name[i], peti_kor_name[i], compatible[i], incompatible[i], summary[i], description[i]];
-            await postgre.query(sql, value);
+            await pgPool.query(sql, value);
         }
 
         res.send('성공');
     } catch (error) {
-        console.log(error);
-    } finally {
-        if (conn) {
-            conn.end();
-        }
+        return next(error);
     }
 });
 module.exports = petiDescriptionRouter;

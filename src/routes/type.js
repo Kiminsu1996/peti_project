@@ -1,8 +1,10 @@
 const typeRouter = require('express').Router();
-const { postgre } = require('../config/database/postgre');
+const { pgPool } = require('../config/database/postgre');
+const controller = require('../module/controller');
 
-typeRouter.get('/peti/type/all', async (req, res) => {
-    try {
+typeRouter.get(
+    '/peti/type/all',
+    controller(async (req, res) => {
         const sql = `SELECT 
                         element_kr AS "nameKr",
                         element_en AS "nameEn",
@@ -15,12 +17,9 @@ typeRouter.get('/peti/type/all', async (req, res) => {
                     FROM 
                         type 
                     ORDER BY idx ASC`;
-        const result = await postgre.query(sql);
+        const result = await pgPool.query(sql);
 
         res.status(200).send(result.rows);
-    } catch (error) {
-        console.log(error);
-    }
-});
-
+    })
+);
 module.exports = typeRouter;

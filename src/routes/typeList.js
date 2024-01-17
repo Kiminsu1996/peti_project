@@ -1,13 +1,11 @@
 const typeListRouter = require('express').Router();
-const { postgre } = require('../config/database/postgre');
+const { pgPool } = require('../config/database/postgre');
 const type = require('../../type.json');
+const controller = require('../module/controller');
 
-typeListRouter.post('/', async (req, res) => {
-    let conn = null;
-
-    try {
-        conn = await postgre.connect();
-
+typeListRouter.post(
+    '/',
+    controller(async (req, res) => {
         for (let i = 0; i < 3; i++) {
             const typeSql = `INSERT INTO
                                 type
@@ -25,16 +23,9 @@ typeListRouter.post('/', async (req, res) => {
                 type[i].rightCharacterKor,
                 type[i].rightAlphabet,
             ];
-            await postgre.query(typeSql, typeValue);
+            await pgPool.query(typeSql, typeValue);
         }
         res.send('성공');
-    } catch (error) {
-        console.log(error);
-    } finally {
-        if (conn) {
-            conn.end();
-        }
-    }
-});
-
+    })
+);
 module.exports = typeListRouter;

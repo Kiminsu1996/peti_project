@@ -1,6 +1,5 @@
 const chatRouter = require('express').Router();
-const { postgre } = require('../config/database/postgre');
-const { BadRequestException } = require('../module/Exception');
+const { pgPool } = require('../config/database/postgre');
 const controller = require('../module/controller');
 const { chatPostValidation, chatGetValidation } = require('../module/validate');
 
@@ -11,7 +10,7 @@ chatRouter.post(
     controller(async (req, res, next) => {
         const { uuid, petiType, message } = req.body;
 
-        const result = await postgre.query(
+        const result = await pgPool.query(
             `INSERT INTO
                 chat
                     (result_uuid, peti_eng_name, message)
@@ -48,12 +47,7 @@ chatRouter.get(
                 idx ASC 
             LIMIT 
                 $3`;
-        const messages = await postgre.query(query, [petiType, lastIdx, limit]);
-
-        if (messages.rows.length === 0) {
-            throw new BadRequestException('Wrong information');
-        }
-
+        const messages = await pgPool.query(query, [petiType, lastIdx, limit]);
         res.status(200).json(messages.rows);
     })
 );

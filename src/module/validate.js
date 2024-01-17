@@ -1,5 +1,14 @@
 const { BadRequestException } = require('./Exception');
 
+const questionGetValidation = (req, res, next) => {
+    const { type } = req.query;
+
+    if (!['dog', 'cat'].includes(type)) {
+        throw new BadRequestException('Wrong information');
+    }
+    next();
+};
+
 const chatPostValidation = (req, res, next) => {
     const { uuid, petiType, message } = req.body;
 
@@ -67,4 +76,13 @@ const resultPostValidation = (req, res, next) => {
     next();
 };
 
-module.exports = { chatPostValidation, chatGetValidation, resultPostValidation };
+const resultGetValidation = (req, res, next) => {
+    const { uuid } = req.params;
+
+    if (!uuid || typeof uuid !== 'string' || uuid.trim().length !== 10) {
+        throw new BadRequestException('Wrong information');
+    }
+    next();
+};
+
+module.exports = { questionGetValidation, chatPostValidation, chatGetValidation, resultPostValidation, resultGetValidation };

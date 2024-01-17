@@ -7,10 +7,8 @@ const config = {
     port: process.env.DB_PORT,
 };
 
-const postgre = new Pool(config);
 const pgPool = new Pool(config);
 
 module.exports = {
-    postgre,
     pgPool,
 };
