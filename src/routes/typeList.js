@@ -1,7 +1,7 @@
 const typeListRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
 const type = require('../../type.json');
-const controller = require('../module/controller');
+const controller = require('../controller/controller');
 
 typeListRouter.post(
     '/',

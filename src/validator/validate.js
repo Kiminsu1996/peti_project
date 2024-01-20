@@ -1,4 +1,4 @@
-const { BadRequestException } = require('./Exception');
+const { BadRequestException } = require('../exception/exception');
 
 const questionGetValidation = (req, res, next) => {
     const { type } = req.query;
@@ -26,7 +26,8 @@ const chatPostValidation = (req, res, next) => {
 };
 
 const chatGetValidation = (req, res, next) => {
-    const { lastIdx, petiType } = req.query;
+    const { lastIdx } = req.query;
+    const { petiType } = req.params;
 
     if (!lastIdx || isNaN(parseInt(lastIdx))) {
         throw new BadRequestException('Wrong information');

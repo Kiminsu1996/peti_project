@@ -9,20 +9,14 @@ const io = socketIo(server);
 
 app.use(express.json());
 
-const questionRouter = require('./src/routes/question');
-app.use('/', questionRouter);
-
-const resultRouter = require('./src/routes/result');
-app.use('/', resultRouter);
-
 const chatRouter = require('./src/routes/chat');
-app.use('/', chatRouter);
+app.use('/chat', chatRouter);
 
-const typeRouter = require('./src/routes/type');
-app.use('/', typeRouter);
+const categoryRouter = require('./src/routes/category');
+app.use('/category', categoryRouter);
 
-const petiRouter = require('./src/routes/peti');
-app.use('/', petiRouter);
+const assessmentRouter = require('./src/routes/assessment');
+app.use('/peti', assessmentRouter);
 
 // seeding
 const questionListRouter = require('./src/routes/questionList');
@@ -34,7 +28,7 @@ app.use('/petiDescriptionList', petiDescriptionRouter);
 const typeListRouter = require('./src/routes/typeList');
 app.use('/typeList', typeListRouter);
 
-const { HttpException } = require('./src/module/Exception');
+const { HttpException } = require('./src/exception/exception');
 
 //클라이언트가 서버에 연결이 되면 실행
 io.on('connection', (socket) => {

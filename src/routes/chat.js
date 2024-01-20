@@ -1,35 +1,37 @@
 const chatRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
-const controller = require('../module/controller');
-const { chatPostValidation, chatGetValidation } = require('../module/validate');
+const controller = require('../controller/controller');
+const { chatPostValidation, chatGetValidation } = require('../validator/validate');
 
-// 채팅방 메세지 저장 API
-chatRouter.post(
-    '/chat',
-    chatPostValidation,
-    controller(async (req, res, next) => {
-        const { uuid, petiType, message } = req.body;
+// 채팅방 메세지 저장 / 메세지 저장은 소켓에서 실행
+// chatRouter.post(
+//     '/chat',
+//     chatPostValidation,
+//     controller(async (req, res, next) => {
+//         const { uuid, petiType, message } = req.body;
 
-        const result = await pgPool.query(
-            `INSERT INTO
-                chat
-                    (result_uuid, peti_eng_name, message)
-                VALUES
-                    ($1, $2, $3) RETURNING idx`,
-            [uuid, petiType, message]
-        );
+//         const result = await pgPool.query(
+//             `INSERT INTO
+//                 chat
+//                     (result_uuid, peti_eng_name, message)
+//                 VALUES
+//                     ($1, $2, $3) RETURNING idx`,
+//             [uuid, petiType, message]
+//         );
 
-        const idx = result.rows[0].idx;
+//         const idx = result.rows[0].idx;
 
-        res.status(200).send({ lastIdx: idx });
-    })
-);
+//         res.status(200).send({ lastIdx: idx });
+//     })
+// );
 // 채팅방 메시지 조회 API
+
 chatRouter.get(
-    '/chat/messages',
+    '/messages/:petiType',
     chatGetValidation,
     controller(async (req, res, next) => {
-        const { lastIdx, petiType } = req.query;
+        const { lastIdx } = req.query;
+        const { petiType } = req.params;
         const limit = 50;
 
         const query = `

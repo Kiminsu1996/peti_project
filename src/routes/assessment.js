@@ -1,15 +1,41 @@
-const resultRouter = require('express').Router();
+const assessmentRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
+const controller = require('../controller/controller');
+const { questionGetValidation } = require('../validator/validate');
 const uuid4 = require('uuid4');
 const { returnAlphbet } = require('../module/calculateAlphabet');
-const { resultPostValidation, resultGetValidation } = require('../module/validate');
-const controller = require('../module/controller');
+const { resultPostValidation, resultGetValidation } = require('../validator/validate');
 const calculateResult = require('../module/calculateResult');
 
-//peti를 계산하는 api
+assessmentRouter.get(
+    '/question',
+    questionGetValidation,
+    controller(async (req, res, next) => {
+        const { type } = req.query; //동물 종류 (강아지, 고양이)
 
-resultRouter.post(
-    '/peti',
+        //질문을 찾는 쿼리문
+        const queryResult = await pgPool.query(
+            `SELECT 
+                idx AS "idx",
+                question AS "question",
+                type AS "type", 
+                left_option AS "leftOption",
+                right_option AS "rightOption",
+                question_type AS "questionType"
+            FROM 
+                question 
+            WHERE 
+                type = $1 
+            ORDER BY RANDOM()`,
+            [type]
+        );
+
+        res.status(200).send(queryResult.rows);
+    })
+);
+
+assessmentRouter.post(
+    '/',
     resultPostValidation,
     controller(async (req, res, next) => {
         const { qusetionAnswerlist, petName, petType, petImg } = req.body;
@@ -63,8 +89,8 @@ resultRouter.post(
 );
 
 //peti 결과를 보여주는 api
-resultRouter.get(
-    '/peti/result/:uuid',
+assessmentRouter.get(
+    '/result/:uuid',
     resultGetValidation,
     controller(async (req, res) => {
         const { uuid } = req.params;
@@ -163,4 +189,4 @@ resultRouter.get(
         });
     })
 );
-module.exports = resultRouter;
+module.exports = assessmentRouter;
