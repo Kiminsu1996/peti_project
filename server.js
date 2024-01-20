@@ -71,10 +71,6 @@ app.use((error, req, res, next) => {
     }
 
     console.log(error);
-
-    res.status(500).send({
-        message: 'Unexpected Error Occured',
-    });
 });
 
 server.listen(port, () => {

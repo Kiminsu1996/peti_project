@@ -7,6 +7,7 @@ const controller = require('../module/controller');
 const calculateResult = require('../module/calculateResult');
 
 //peti를 계산하는 api
+
 resultRouter.post(
     '/peti',
     resultPostValidation,
@@ -27,6 +28,7 @@ resultRouter.post(
                 question 
             WHERE 
                 idx BETWEEN $1 AND $2
+                
             ORDER BY 
                 idx ASC`,
             [minIdx, maxIdx]

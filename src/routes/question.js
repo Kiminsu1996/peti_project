@@ -1,5 +1,6 @@
 const questionRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
+const { InternalServerError } = require('../module/Exception');
 const controller = require('../module/controller');
 const { questionGetValidation } = require('../module/validate');
 

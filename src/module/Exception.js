@@ -22,4 +22,12 @@ class NotFoundException extends HttpException {
     }
 }
 
-module.exports = { HttpException, BadRequestException, NotFoundException };
+class InternalServerError extends HttpException {
+    constructor(message) {
+        super(500, message, null);
+    }
+}
+
+module.exports = { HttpException, BadRequestException, NotFoundException, InternalServerError };
+
+// 200, 400, 404, 500
