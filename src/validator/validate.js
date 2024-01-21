@@ -29,9 +29,10 @@ const chatGetValidation = (req, res, next) => {
     const { lastIdx } = req.query;
     const { petiType } = req.params;
 
-    if (!lastIdx || isNaN(parseInt(lastIdx))) {
+    if (lastIdx !== undefined && isNaN(lastIdx.trim())) {
         throw new BadRequestException('Wrong information');
     }
+
     if (!petiType || typeof petiType !== 'string' || petiType.trim().length !== 4) {
         throw new BadRequestException('Wrong information');
     }
@@ -44,7 +45,7 @@ const resultPostValidation = (req, res, next) => {
     const nameRegex = /^[가-힣a-zA-Z0-9]{1,10}$/; // 한글,영어(소문자,대문자), 숫자 최대 길이 10 까지
     const idxSet = new Set(); //자료구조 set 안에 값은 중복된 값이 없어야한다.
 
-    if (!qusetionAnswerlist || !Array.isArray(qusetionAnswerlist) || qusetionAnswerlist.length === 0) {
+    if (!qusetionAnswerlist || !Array.isArray(qusetionAnswerlist) || qusetionAnswerlist.length !== 20) {
         throw new BadRequestException('Wrong information');
     }
 

@@ -33,23 +33,37 @@ chatRouter.get(
         const { lastIdx } = req.query;
         const { petiType } = req.params;
         const limit = 50;
+        let query;
 
-        const query = `
-            SELECT 
-                idx,
-                result_uuid AS "uuid",
-                peti_eng_name AS "petiType",
-                message,
-                created
-            FROM 
-                chat 
-            WHERE 
-                peti_eng_name = $1 AND idx <= $2 
-            ORDER BY 
-                idx ASC 
-            LIMIT 
-                $3`;
-        const messages = await pgPool.query(query, [petiType, lastIdx, limit]);
+        if (lastIdx) {
+            query = `
+                SELECT 
+                    peti_eng_name AS "petiType",
+                    message
+                FROM 
+                    chat 
+                WHERE 
+                    peti_eng_name = $1 AND idx <= $2 
+                ORDER BY 
+                    idx ASC 
+                LIMIT 
+                    $3`;
+            messages = await pgPool.query(query, [petiType, lastIdx, limit]);
+        } else {
+            query = `
+                SELECT 
+                    peti_eng_name AS "petiType",
+                    message
+                FROM 
+                    chat 
+                WHERE 
+                    peti_eng_name = $1
+                ORDER BY 
+                    idx ASC 
+                LIMIT 
+                    $2`;
+            messages = await pgPool.query(query, [petiType, limit]);
+        }
         res.status(200).json(messages.rows);
     })
 );
