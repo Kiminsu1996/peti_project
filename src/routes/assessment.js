@@ -1,11 +1,13 @@
 const assessmentRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
 const controller = require('../controller/controller');
-const { questionGetValidation } = require('../validator/validate');
+const { questionGetValidation } = require('../middleware/validate');
 const uuid4 = require('uuid4');
 const { returnAlphbet } = require('../module/calculateAlphabet');
-const { resultPostValidation, resultGetValidation } = require('../validator/validate');
+const { resultPostValidation, resultGetValidation } = require('../middleware/validate');
 const calculateResult = require('../module/calculateResult');
+const { uploadFile } = require('../module/s3FileManager');
+const upload = require('../middleware/uploadGuard');
 
 assessmentRouter.get(
     '/question',
@@ -36,11 +38,14 @@ assessmentRouter.get(
 
 assessmentRouter.post(
     '/',
+    upload.array('files', 1),
     resultPostValidation,
     controller(async (req, res, next) => {
-        const { qusetionAnswerlist, petName, petType, petImg } = req.body;
+        let { qusetionAnswerlist, petName, petType } = req.body;
         const uuid = uuid4().replace(/-/g, '').substring(0, 10); // - 없앤 10글자
+        let imgUrls = null;
 
+        qusetionAnswerlist = JSON.parse(qusetionAnswerlist);
         //프론트에서 받은 결과 값을 idx 순서대로 정렬
         const userValue = qusetionAnswerlist.sort((start, end) => start.idx - end.idx);
         const minIdx = Math.min(...userValue.map((min) => min.idx));
@@ -65,23 +70,25 @@ assessmentRouter.post(
 
         // peti 검사유형 단어조합
         const peti = `${proportions.aProportion}${proportions.eProportion}${proportions.cProportion}${proportions.lProportion}`;
+        if (req.files) {
+            const uploadPromises = req.files.map((file) => uploadFile(file));
+            imgUrls = await Promise.all(uploadPromises);
+        }
 
         const petiResult = `INSERT INTO
                                 result
-                                    (uuid, peti_eng_name, a_proportion, e_proportion, c_proportion, l_proportion, pet_name, pet_type, pet_img)
+                                    (uuid, 
+                                    peti_eng_name, 
+                                    a_proportion, 
+                                    e_proportion, 
+                                    c_proportion, 
+                                    l_proportion, 
+                                    pet_name, 
+                                    pet_type, 
+                                    pet_img)
                                 VALUES
                                     ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
-        const value = [
-            uuid,
-            peti,
-            weightPercentages[0],
-            weightPercentages[1],
-            weightPercentages[2],
-            weightPercentages[3],
-            petName,
-            petType,
-            petImg,
-        ];
+        const value = [uuid, peti, percentValue[0], percentValue[1], percentValue[2], percentValue[3], petName, petType, imgUrls[0]];
         await pgPool.query(petiResult, value);
 
         res.status(200).send({ uuid: uuid });
@@ -189,4 +196,5 @@ assessmentRouter.get(
         });
     })
 );
+
 module.exports = assessmentRouter;

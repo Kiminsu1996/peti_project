@@ -1,7 +1,7 @@
 const chatRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
 const controller = require('../controller/controller');
-const { chatPostValidation, chatGetValidation } = require('../validator/validate');
+const { chatPostValidation, chatGetValidation } = require('../middleware/validate');
 
 // 채팅방 메세지 저장 / 메세지 저장은 소켓에서 실행
 // chatRouter.post(

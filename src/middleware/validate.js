@@ -41,9 +41,17 @@ const chatGetValidation = (req, res, next) => {
 };
 
 const resultPostValidation = (req, res, next) => {
-    const { qusetionAnswerlist, petName, petType } = req.body;
+    let { qusetionAnswerlist, petName, petType } = req.body;
     const nameRegex = /^[가-힣a-zA-Z0-9]{1,10}$/; // 한글,영어(소문자,대문자), 숫자 최대 길이 10 까지
     const idxSet = new Set(); //자료구조 set 안에 값은 중복된 값이 없어야한다.
+
+    if (typeof qusetionAnswerlist === 'string') {
+        try {
+            qusetionAnswerlist = JSON.parse(qusetionAnswerlist);
+        } catch (error) {
+            throw new BadRequestException('Invalid qusetionAnswerlist format');
+        }
+    }
 
     if (!qusetionAnswerlist || !Array.isArray(qusetionAnswerlist) || qusetionAnswerlist.length !== 20) {
         throw new BadRequestException('Wrong information');
@@ -74,7 +82,6 @@ const resultPostValidation = (req, res, next) => {
     if (!petType || typeof petType !== 'string' || petType.trim().length === 0) {
         throw new BadRequestException('Wrong information');
     }
-
     next();
 };
 
