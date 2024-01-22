@@ -2,6 +2,7 @@ const chatRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
 const controller = require('../controller/controller');
 const { chatPostValidation, chatGetValidation } = require('../middleware/validate');
+const { logging } = require('../module/logging');
 
 // 채팅방 메세지 저장 / 메세지 저장은 소켓에서 실행
 // chatRouter.post(
@@ -64,6 +65,7 @@ chatRouter.get(
                     $2`;
             messages = await pgPool.query(query, [petiType, limit]);
         }
+        await logging(req, res, next);
         res.status(200).json(messages.rows);
     })
 );
