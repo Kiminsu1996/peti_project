@@ -8,6 +8,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 app.use(express.json());
+app.use(express.static('public'));
 
 const chatRouter = require('./src/routes/chat');
 app.use('/chat', chatRouter);
@@ -32,21 +33,14 @@ const { HttpException } = require('./src/exception/exception');
 
 //클라이언트가 서버에 연결이 되면 실행
 io.on('connection', (socket) => {
-    console.log('user connected');
-
-    socket.on('joinRoom', (room) => {
-        socket.join(room); // 사용자를 방에 참여
-        console.log(`user join: ${room}`);
+    //채팅방 입장
+    socket.on('connection', (petiType) => {
+        socket.join(petiType);
+        console.log(`${petiType} 방에 오신걸 환영 합니다.`);
     });
 
-    socket.on('message', (data) => {
-        // 메시지를 해당 방의 모든 사용자에게 전송
-        io.to(data.room).emit('message', { sender: data.sender, message: data.message });
-    });
-
-    //사용자가 서버와 연결을 끊을 때
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        console.log('연결이 끊겼습니다.');
     });
 });
 

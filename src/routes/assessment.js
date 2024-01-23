@@ -10,6 +10,7 @@ const { uploadFile } = require('../module/s3FileManager');
 const upload = require('../middleware/uploadGuard');
 const { logging } = require('../module/logging');
 
+//질문 보여주는 api
 assessmentRouter.get(
     '/question',
     questionGetValidation,
@@ -37,6 +38,7 @@ assessmentRouter.get(
     })
 );
 
+//peti 결과 계산 후 저장 api
 assessmentRouter.post(
     '/',
     upload.array('files', 1),
@@ -105,6 +107,7 @@ assessmentRouter.get(
         const { uuid } = req.params;
         const resultQuery = `
                             SELECT
+                                result.uuid AS "uuid",
                                 result.pet_name AS "name",
                                 result.pet_img AS "profileImg",
                                 result.a_proportion AS "a_percent",
@@ -142,6 +145,7 @@ assessmentRouter.get(
                 {
                     petiTypeList: [
                         {
+                            uuid: finalResult.rows[0].uuid,
                             nameKr: finalResult.rows[0].nameKr,
                             nameEn: finalResult.rows[0].nameEn,
                             compatibleKr: finalResult.rows[0].compatibleKr,

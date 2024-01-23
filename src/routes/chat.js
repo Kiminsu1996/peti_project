@@ -5,26 +5,24 @@ const { chatPostValidation, chatGetValidation } = require('../middleware/validat
 const { logging } = require('../module/logging');
 
 // 채팅방 메세지 저장 / 메세지 저장은 소켓에서 실행
-// chatRouter.post(
-//     '/chat',
-//     chatPostValidation,
-//     controller(async (req, res, next) => {
-//         const { uuid, petiType, message } = req.body;
+chatRouter.post(
+    '/chat',
+    chatPostValidation,
+    controller(async (req, res, next) => {
+        const { uuid, petiType, message } = req.body;
 
-//         const result = await pgPool.query(
-//             `INSERT INTO
-//                 chat
-//                     (result_uuid, peti_eng_name, message)
-//                 VALUES
-//                     ($1, $2, $3) RETURNING idx`,
-//             [uuid, petiType, message]
-//         );
+        await pgPool.query(
+            `INSERT INTO
+                chat
+                    (result_uuid, peti_eng_name, message)
+                VALUES
+                    ($1, $2, $3) RETURNING idx`,
+            [uuid, petiType, message]
+        );
 
-//         const idx = result.rows[0].idx;
-
-//         res.status(200).send({ lastIdx: idx });
-//     })
-// );
+        io.to(petiType).emit('message', { message: message });
+    })
+);
 // 채팅방 메시지 조회 API
 
 chatRouter.get(
@@ -38,7 +36,8 @@ chatRouter.get(
 
         if (lastIdx) {
             query = `
-                SELECT 
+                SELECT
+                    idx,
                     peti_eng_name AS "petiType",
                     message
                 FROM 
