@@ -6,10 +6,14 @@ const app = express();
 const port = process.env.PORT;
 const server = http.createServer(app);
 const io = socketIo(server);
+const { saveChatMessage } = require('./src/module/chatPost');
 
 app.use(express.json());
 app.use(express.static('public'));
 
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 const chatRouter = require('./src/routes/chat');
 app.use('/chat', chatRouter);
 
@@ -34,9 +38,18 @@ const { HttpException } = require('./src/exception/exception');
 //클라이언트가 서버에 연결이 되면 실행
 io.on('connection', (socket) => {
     //채팅방 입장
-    socket.on('connection', (petiType) => {
+    socket.on('joinRoom', (petiType) => {
         socket.join(petiType);
         console.log(`${petiType} 방에 오신걸 환영 합니다.`);
+    });
+
+    socket.on('chat message', async (msg, uuid, petiType) => {
+        try {
+            await saveChatMessage(msg, uuid, petiType);
+            io.to(petiType).emit('chat message', msg);
+        } catch (error) {
+            console.error('메세지를 보낼 수 없습니다.', error);
+        }
     });
 
     socket.on('disconnect', () => {
