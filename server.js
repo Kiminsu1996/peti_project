@@ -34,6 +34,7 @@ const typeListRouter = require('./src/routes/typeList');
 app.use('/typeList', typeListRouter);
 
 const { HttpException } = require('./src/exception/exception');
+const controller = require('./src/controller/controller');
 
 //클라이언트가 서버에 연결이 되면 실행
 io.on('connection', (socket) => {
@@ -43,14 +44,15 @@ io.on('connection', (socket) => {
         console.log(`${petiType} 방에 오신걸 환영 합니다.`);
     });
 
-    socket.on('chat message', async (msg, uuid, petiType) => {
-        try {
+    // 채팅방 메세지 보내기
+    socket.on(
+        'chat message',
+        controller(async (msg, uuid, petiType) => {
+            //메세지 저장
             await saveChatMessage(msg, uuid, petiType);
             io.to(petiType).emit('chat message', msg);
-        } catch (error) {
-            console.error('메세지를 보낼 수 없습니다.', error);
-        }
-    });
+        })
+    );
 
     socket.on('disconnect', () => {
         console.log('연결이 끊겼습니다.');
