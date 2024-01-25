@@ -14,6 +14,8 @@ app.use(express.static('public'));
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
+
+//api
 const chatRouter = require('./src/routes/chat');
 app.use('/chat', chatRouter);
 
@@ -54,11 +56,13 @@ io.on('connection', (socket) => {
         })
     );
 
+    //채팅방 나가기
     socket.on('disconnect', () => {
         console.log('연결이 끊겼습니다.');
     });
 });
 
+//애러처리
 app.use((error, req, res, next) => {
     //req에서 json 형태가 아닐 경우
     if (error instanceof SyntaxError) {
