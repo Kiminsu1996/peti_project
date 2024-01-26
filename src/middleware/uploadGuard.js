@@ -5,7 +5,6 @@ const fileFilter = (req, file, cb) => {
     const allowTypes = /jpg|png/; // 정규표현식
     const checkTypes = allowTypes.test(file.mimetype); //파일 확장자 확인
 
-    //이부분은... 어떻게 애러차리하는게 좋을까?
     if (!checkTypes) {
         return cb(new BadRequestException('Wrong information'), false);
     }
