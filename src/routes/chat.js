@@ -4,26 +4,6 @@ const controller = require('../controller/controller');
 const { chatPostValidation, chatGetValidation } = require('../middleware/validate');
 const { logging } = require('../module/logging');
 
-// 채팅방 메세지 저장 / 메세지 저장은 소켓에서 실행
-// chatRouter.post(
-//     '/',
-//     chatPostValidation,
-//     controller(async (req, res, next) => {
-//         const { uuid, petiType, message } = req.body;
-
-//         await pgPool.query(
-//             `INSERT INTO
-//                 chat
-//                     (result_uuid, peti_eng_name, message)
-//                 VALUES
-//                     ($1, $2, $3)`,
-//             [uuid, petiType, message]
-//         );
-//         res.status(200).send();
-//     })
-// );
-// // 채팅방 메시지 조회 API
-
 chatRouter.get(
     '/messages/:petiType',
     chatGetValidation,
