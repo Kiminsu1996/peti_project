@@ -48,11 +48,11 @@ io.on('connection', (socket) => {
 
     // 채팅방 메세지 보내기
     socket.on(
-        'chat message',
+        'chatMessage',
         controller(async (msg, uuid, petiType) => {
             //메세지 저장
             await saveChatMessage(msg, uuid, petiType);
-            io.to(petiType).emit('chat message', msg);
+            io.to(petiType).emit('newChatMessage', msg);
         })
     );
 
@@ -60,6 +60,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('연결이 끊겼습니다.');
     });
+    // 일정시간이 지나면 종료 되는 것도 만들고, 소켓을 자동으로 끊어주는 것도 만들기 ,  test용으로 소켓들 얼마나 연결되어 있는지 코드로 만들 수 있다.
 });
 
 //애러처리
