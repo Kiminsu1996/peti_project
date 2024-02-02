@@ -43,7 +43,6 @@ chatRouter.get(
                     $2`;
             messages = await pgPool.query(query, [petiType, limit]);
         }
-        await logging(req, res, next);
         res.status(200).json(messages.rows);
     })
 );

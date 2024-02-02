@@ -33,7 +33,6 @@ assessmentRouter.get(
             ORDER BY RANDOM()`,
             [type]
         );
-        await logging(req, res, next);
         res.status(200).send(queryResult.rows);
     })
 );
@@ -93,8 +92,6 @@ assessmentRouter.post(
                                     ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
         const value = [uuid, peti, percentValue[0], percentValue[1], percentValue[2], percentValue[3], petName, petType, imgUrls[0]];
         await pgPool.query(petiResult, value);
-        await logging(req, res, next);
-
         res.status(200).send({ uuid: uuid });
     })
 );
@@ -134,8 +131,6 @@ assessmentRouter.get(
                                 result.uuid = $1`;
         const finalResult = await pgPool.query(resultQuery, [uuid]);
         const typeResult = await pgPool.query(`SELECT * FROM type`);
-        await logging(req, res, next);
-
         res.status(200).send({
             pet: {
                 name: finalResult.rows[0].name,
@@ -205,3 +200,4 @@ assessmentRouter.get(
 );
 
 module.exports = assessmentRouter;
+g

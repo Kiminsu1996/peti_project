@@ -19,8 +19,6 @@ categoryRouter.get(
                         type 
                     ORDER BY idx ASC`;
         const result = await pgPool.query(sql);
-        await logging(req, res, next);
-
         res.status(200).send(result.rows);
     })
 );
@@ -37,8 +35,6 @@ categoryRouter.get(
                         peti 
                     `;
         const result = await pgPool.query(sql);
-        await logging(req, res, next);
-
         res.status(200).send(result.rows);
     })
 );
