@@ -1,6 +1,6 @@
 const assessmentRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
-const controller = require('../controller/controller');
+const controller = require('../module/controller');
 const { questionGetValidation } = require('../middleware/validate');
 const uuid4 = require('uuid4');
 const { returnAlphbet } = require('../module/calculateAlphabet');
@@ -8,7 +8,6 @@ const { resultPostValidation, resultGetValidation } = require('../middleware/val
 const calculateResult = require('../module/calculateResult');
 const { uploadFile } = require('../module/s3FileManager');
 const upload = require('../middleware/uploadGuard');
-const { logging } = require('../module/logging');
 
 //질문 보여주는 api
 assessmentRouter.get(
@@ -200,4 +199,3 @@ assessmentRouter.get(
 );
 
 module.exports = assessmentRouter;
-g

@@ -1,10 +1,9 @@
 const categoryRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
-const controller = require('../controller/controller');
-const { logging } = require('../module/logging');
+const controller = require('../module/controller');
 
 categoryRouter.get(
-    '/type/all',
+    '/element',
     controller(async (req, res, next) => {
         const sql = `SELECT 
                         element_kr AS "nameKr",
@@ -24,7 +23,7 @@ categoryRouter.get(
 );
 
 categoryRouter.get(
-    '/all',
+    '/character',
     controller(async (req, res, next) => {
         const sql = `SELECT 
                         peti_eng_name AS "nameEn",

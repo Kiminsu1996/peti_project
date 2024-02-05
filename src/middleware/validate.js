@@ -1,4 +1,4 @@
-const { BadRequestException } = require('../exception/exception');
+const { BadRequestException } = require('../config/exception');
 
 const questionGetValidation = (req, res, next) => {
     const { type } = req.query;
