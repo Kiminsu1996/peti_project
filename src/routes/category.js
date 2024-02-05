@@ -1,10 +1,9 @@
 const categoryRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
-const controller = require('../controller/controller');
-const { logging } = require('../module/logging');
+const controller = require('../module/controller');
 
 categoryRouter.get(
-    '/type/all',
+    '/element',
     controller(async (req, res, next) => {
         const sql = `SELECT 
                         element_kr AS "nameKr",
@@ -19,14 +18,12 @@ categoryRouter.get(
                         type 
                     ORDER BY idx ASC`;
         const result = await pgPool.query(sql);
-        await logging(req, res, next);
-
         res.status(200).send(result.rows);
     })
 );
 
 categoryRouter.get(
-    '/all',
+    '/character',
     controller(async (req, res, next) => {
         const sql = `SELECT 
                         peti_eng_name AS "nameEn",
@@ -37,8 +34,6 @@ categoryRouter.get(
                         peti 
                     `;
         const result = await pgPool.query(sql);
-        await logging(req, res, next);
-
         res.status(200).send(result.rows);
     })
 );

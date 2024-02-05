@@ -1,5 +1,5 @@
 const multer = require('multer');
-const { BadRequestException } = require('../exception/exception');
+const { BadRequestException } = require('../config/exception');
 
 const fileFilter = (req, file, cb) => {
     const allowTypes = /jpg|png/; // 정규표현식

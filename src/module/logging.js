@@ -1,5 +1,5 @@
 const { client } = require('../config/database/mongo');
-const controller = require('../controller/controller');
+const controller = require('./controller');
 
 const logging = controller(async (req, res, next) => {
     const database = client.db('peti');
@@ -12,6 +12,7 @@ const logging = controller(async (req, res, next) => {
     };
 
     await collection.insertOne(logData);
+    next();
 });
 
 module.exports = { logging };

@@ -1,6 +1,6 @@
 const assessmentRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
-const controller = require('../controller/controller');
+const controller = require('../module/controller');
 const { questionGetValidation } = require('../middleware/validate');
 const uuid4 = require('uuid4');
 const { returnAlphbet } = require('../module/calculateAlphabet');
@@ -8,7 +8,6 @@ const { resultPostValidation, resultGetValidation } = require('../middleware/val
 const calculateResult = require('../module/calculateResult');
 const { uploadFile } = require('../module/s3FileManager');
 const upload = require('../middleware/uploadGuard');
-const { logging } = require('../module/logging');
 
 //질문 보여주는 api
 assessmentRouter.get(
@@ -33,7 +32,6 @@ assessmentRouter.get(
             ORDER BY RANDOM()`,
             [type]
         );
-        await logging(req, res, next);
         res.status(200).send(queryResult.rows);
     })
 );
@@ -93,8 +91,6 @@ assessmentRouter.post(
                                     ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
         const value = [uuid, peti, percentValue[0], percentValue[1], percentValue[2], percentValue[3], petName, petType, imgUrls[0]];
         await pgPool.query(petiResult, value);
-        await logging(req, res, next);
-
         res.status(200).send({ uuid: uuid });
     })
 );
@@ -134,8 +130,6 @@ assessmentRouter.get(
                                 result.uuid = $1`;
         const finalResult = await pgPool.query(resultQuery, [uuid]);
         const typeResult = await pgPool.query(`SELECT * FROM type`);
-        await logging(req, res, next);
-
         res.status(200).send({
             pet: {
                 name: finalResult.rows[0].name,

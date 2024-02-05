@@ -14,16 +14,6 @@ async function uploadFile(file) {
     return `https://peti-project.s3.ap-northeast-2.amazonaws.com/${key}`;
 }
 
-async function deleteFile(url) {
-    const key = url.split('/').pop();
-    const deleteParams = {
-        Bucket: 'peti',
-        Key: key,
-    };
-    await s3Client.send(new DeleteObjectCommand(deleteParams));
-}
-
 module.exports = {
     uploadFile,
-    deleteFile,
 };
