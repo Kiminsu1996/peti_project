@@ -1,5 +1,5 @@
 const { s3Client } = require('../config/awsConfig');
-const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const uuid4 = require('uuid4');
 
 async function uploadFile(file) {

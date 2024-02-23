@@ -42,10 +42,11 @@ app.use('/typeList', typeListRouter);
 //클라이언트가 서버에 연결이 되면 실행
 const chatRoomMembers = new Map();
 
+// socket
 io.on('connection', (socket) => {
     let roomTimeout;
 
-    //채팅방 입장
+    //채팅방 연결
     socket.on('joinRoom', (petiType) => {
         const members = chatRoomMembers.get(petiType) || 0;
 
@@ -55,7 +56,7 @@ io.on('connection', (socket) => {
             chatRoomMembers.set(petiType, members + 1);
             console.log(`${petiType} 방에 오신걸 환영 합니다.`);
 
-            // 1시간 이상 채팅망에 머무를 경우 자동으로 나가는 설정
+            // 1시간 이상 채팅방에 머무를 경우 자동으로 나가는 설정
             roomTimeout = setTimeout(() => {
                 socket.leave(petiType);
                 const members = chatRoomMembers.get(petiType) || 0;
@@ -86,12 +87,11 @@ io.on('connection', (socket) => {
         socket.emit('leftRoom', `${petiType} 방에서 나갔습니다.`);
     });
 
-    //채팅방 나가기
+    //채팅방 연결 종료
     socket.on('disconnect', () => {
         clearTimeout(roomTimeout);
         console.log('연결이 끊겼습니다.');
     });
-    // 일정시간이 지나면 종료 되는 것도 만들고, 소켓을 자동으로 끊어주는 것도 만들기 ,  test용으로 소켓들 얼마나 연결되어 있는지 코드로 만들 수 있다.
 });
 
 //애러처리

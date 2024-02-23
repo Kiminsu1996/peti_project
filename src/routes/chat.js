@@ -1,8 +1,5 @@
 const chatRouter = require('express').Router();
 const { pgPool } = require('../config/database/postgre');
-const controller = require('../controller/controller');
-const { chatGetValidation } = require('../middleware/validate');
-const { logging } = require('../module/logging');
 const controller = require('../module/controller');
 const { chatGetValidation } = require('../middleware/validate');
 
